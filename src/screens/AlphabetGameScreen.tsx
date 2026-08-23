@@ -6,6 +6,8 @@ import OptionButton from '../components/OptionButton';
 import ProgressBar from '../components/ProgressBar';
 import CelebrationOverlay from '../components/CelebrationOverlay';
 import LevelCompleteCard from '../components/LevelCompleteCard';
+import AnimatedCreature from '../components/AnimatedCreature';
+import CreatureStage from '../components/CreatureStage';
 import { generateAlphabetQuestion } from '../data/alphabetData';
 import { alphabetModeFor } from '../data/difficulty';
 import { useAge } from '../context/AgeContext';
@@ -56,7 +58,9 @@ function AlphabetLevelRound({ level, navigation }: { level: number; navigation: 
       {question.mode === 'pick-letter' ? (
         <>
           <Text style={styles.prompt}>Bu hansı hərflə başlayır?</Text>
-          <Text style={styles.emoji}>{question.target.emoji}</Text>
+          <CreatureStage>
+            <AnimatedCreature emoji={question.target.emoji} motion={question.target.motion} size={92} />
+          </CreatureStage>
           <View style={styles.options}>
             {question.letterOptions.map((letter) => (
               <OptionButton
@@ -77,7 +81,8 @@ function AlphabetLevelRound({ level, navigation }: { level: number; navigation: 
             {question.itemOptions.map((item) => (
               <OptionButton
                 key={item.letter}
-                label={`${item.emoji}\n${item.word}`}
+                label={item.word}
+                icon={<AnimatedCreature emoji={item.emoji} motion="idle" size={30} />}
                 status={statusFor(item.letter)}
                 disabled={solved}
                 onPress={() => onSelect(item.letter)}
@@ -121,10 +126,6 @@ const styles = StyleSheet.create({
     marginTop: 12,
     textAlign: 'center',
     paddingHorizontal: 24,
-  },
-  emoji: {
-    fontSize: 96,
-    marginVertical: 24,
   },
   letter: {
     fontSize: 96,

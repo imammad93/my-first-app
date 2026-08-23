@@ -1,73 +1,76 @@
 import { pickOne, shuffle } from '../utils/random';
+import { MotionType } from './motion';
 
 export type WordCard = {
   emoji: string;
   word: string;
+  motion: MotionType;
 };
 
 const tier0: WordCard[] = [
-  { emoji: '🐱', word: 'Cat' },
-  { emoji: '🐶', word: 'Dog' },
-  { emoji: '☀️', word: 'Sun' },
-  { emoji: '🐮', word: 'Cow' },
-  { emoji: '🐷', word: 'Pig' },
-  { emoji: '🎩', word: 'Hat' },
-  { emoji: '☕', word: 'Cup' },
-  { emoji: '📦', word: 'Box' },
-  { emoji: '🛏️', word: 'Bed' },
-  { emoji: '🥚', word: 'Egg' },
+  { emoji: '🐱', word: 'Cat', motion: 'walk' },
+  { emoji: '🐶', word: 'Dog', motion: 'walk' },
+  { emoji: '☀️', word: 'Sun', motion: 'idle' },
+  { emoji: '🐮', word: 'Cow', motion: 'walk' },
+  { emoji: '🐷', word: 'Pig', motion: 'walk' },
+  { emoji: '🎩', word: 'Hat', motion: 'idle' },
+  { emoji: '☕', word: 'Cup', motion: 'idle' },
+  { emoji: '📦', word: 'Box', motion: 'idle' },
+  { emoji: '🛏️', word: 'Bed', motion: 'idle' },
+  { emoji: '🥚', word: 'Egg', motion: 'idle' },
 ];
 
 const tier1: WordCard[] = [
-  { emoji: '🐟', word: 'Fish' },
-  { emoji: '🐦', word: 'Bird' },
-  { emoji: '🦁', word: 'Lion' },
-  { emoji: '🐸', word: 'Frog' },
-  { emoji: '🦆', word: 'Duck' },
-  { emoji: '⭐', word: 'Star' },
-  { emoji: '🌙', word: 'Moon' },
-  { emoji: '🌳', word: 'Tree' },
-  { emoji: '📕', word: 'Book' },
-  { emoji: '⚽', word: 'Ball' },
+  { emoji: '🐟', word: 'Fish', motion: 'swim' },
+  { emoji: '🐦', word: 'Bird', motion: 'fly' },
+  { emoji: '🦁', word: 'Lion', motion: 'walk' },
+  { emoji: '🐸', word: 'Frog', motion: 'hop' },
+  { emoji: '🦆', word: 'Duck', motion: 'walk' },
+  { emoji: '⭐', word: 'Star', motion: 'idle' },
+  { emoji: '🌙', word: 'Moon', motion: 'idle' },
+  { emoji: '🌳', word: 'Tree', motion: 'idle' },
+  { emoji: '📕', word: 'Book', motion: 'idle' },
+  { emoji: '⚽', word: 'Ball', motion: 'hop' },
 ];
 
 const tier2: WordCard[] = [
-  { emoji: '🍎', word: 'Apple' },
-  { emoji: '🍇', word: 'Grapes' },
-  { emoji: '🏠', word: 'House' },
-  { emoji: '🐰', word: 'Rabbit' },
-  { emoji: '🟡', word: 'Yellow' },
-  { emoji: '🍊', word: 'Orange' },
-  { emoji: '🟣', word: 'Purple' },
-  { emoji: '🐒', word: 'Monkey' },
-  { emoji: '🐢', word: 'Turtle' },
-  { emoji: '🎸', word: 'Guitar' },
+  { emoji: '🍎', word: 'Apple', motion: 'idle' },
+  { emoji: '🍇', word: 'Grapes', motion: 'idle' },
+  { emoji: '🏠', word: 'House', motion: 'idle' },
+  { emoji: '🐰', word: 'Rabbit', motion: 'hop' },
+  { emoji: '🟡', word: 'Yellow', motion: 'idle' },
+  { emoji: '🍊', word: 'Orange', motion: 'idle' },
+  { emoji: '🟣', word: 'Purple', motion: 'idle' },
+  { emoji: '🐒', word: 'Monkey', motion: 'hop' },
+  { emoji: '🐢', word: 'Turtle', motion: 'walk' },
+  { emoji: '🎸', word: 'Guitar', motion: 'idle' },
+  { emoji: '✈️', word: 'Airplane', motion: 'fly' },
 ];
 
 const tier3: WordCard[] = [
-  { emoji: '🐘', word: 'Elephant' },
-  { emoji: '🦋', word: 'Butterfly' },
-  { emoji: '☂️', word: 'Umbrella' },
-  { emoji: '🦖', word: 'Dinosaur' },
-  { emoji: '⛰️', word: 'Mountain' },
-  { emoji: '🍫', word: 'Chocolate' },
-  { emoji: '🍓', word: 'Strawberry' },
-  { emoji: '🦘', word: 'Kangaroo' },
-  { emoji: '🐊', word: 'Alligator' },
-  { emoji: '🚁', word: 'Helicopter' },
+  { emoji: '🐘', word: 'Elephant', motion: 'walk' },
+  { emoji: '🦋', word: 'Butterfly', motion: 'fly' },
+  { emoji: '☂️', word: 'Umbrella', motion: 'idle' },
+  { emoji: '🦖', word: 'Dinosaur', motion: 'walk' },
+  { emoji: '⛰️', word: 'Mountain', motion: 'idle' },
+  { emoji: '🍫', word: 'Chocolate', motion: 'idle' },
+  { emoji: '🍓', word: 'Strawberry', motion: 'idle' },
+  { emoji: '🦘', word: 'Kangaroo', motion: 'hop' },
+  { emoji: '🐊', word: 'Alligator', motion: 'swim' },
+  { emoji: '🚁', word: 'Helicopter', motion: 'fly' },
 ];
 
 const tier4: WordCard[] = [
-  { emoji: '🚀', word: 'Astronaut' },
-  { emoji: '🌋', word: 'Volcano' },
-  { emoji: '🔭', word: 'Telescope' },
-  { emoji: '🌊', word: 'Waterfall' },
-  { emoji: '🌈', word: 'Rainbow' },
-  { emoji: '🗺️', word: 'Adventure' },
-  { emoji: '💰', word: 'Treasure' },
-  { emoji: '🐉', word: 'Dragon' },
-  { emoji: '🏰', word: 'Castle' },
-  { emoji: '🏝️', word: 'Island' },
+  { emoji: '🚀', word: 'Astronaut', motion: 'fly' },
+  { emoji: '🌋', word: 'Volcano', motion: 'idle' },
+  { emoji: '🔭', word: 'Telescope', motion: 'idle' },
+  { emoji: '🌊', word: 'Waterfall', motion: 'idle' },
+  { emoji: '🌈', word: 'Rainbow', motion: 'idle' },
+  { emoji: '🗺️', word: 'Adventure', motion: 'idle' },
+  { emoji: '💰', word: 'Treasure', motion: 'idle' },
+  { emoji: '🐉', word: 'Dragon', motion: 'fly' },
+  { emoji: '🏰', word: 'Castle', motion: 'idle' },
+  { emoji: '🏝️', word: 'Island', motion: 'idle' },
 ];
 
 export const englishTiers: WordCard[][] = [tier0, tier1, tier2, tier3, tier4];

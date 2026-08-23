@@ -6,6 +6,8 @@ import OptionButton from '../components/OptionButton';
 import ProgressBar from '../components/ProgressBar';
 import CelebrationOverlay from '../components/CelebrationOverlay';
 import LevelCompleteCard from '../components/LevelCompleteCard';
+import AnimatedCreature from '../components/AnimatedCreature';
+import CreatureStage from '../components/CreatureStage';
 import { generateEnglishQuestion } from '../data/englishData';
 import { englishTierFor } from '../data/difficulty';
 import { useAge } from '../context/AgeContext';
@@ -46,7 +48,9 @@ function EnglishLevelRound({ level, navigation }: { level: number; navigation: P
     <SafeAreaView style={styles.container}>
       <ProgressBar current={Math.min(questionNumber, totalQuestions)} total={totalQuestions} color={colors.english} />
       <Text style={styles.prompt}>Bu nədir?</Text>
-      <Text style={styles.emoji}>{question.card.emoji}</Text>
+      <CreatureStage>
+        <AnimatedCreature emoji={question.card.emoji} motion={question.card.motion} size={92} />
+      </CreatureStage>
       <View style={styles.options}>
         {question.options.map((option) => (
           <OptionButton
@@ -90,10 +94,6 @@ const styles = StyleSheet.create({
     fontWeight: '700',
     color: colors.text,
     marginTop: 12,
-  },
-  emoji: {
-    fontSize: 96,
-    marginVertical: 24,
   },
   options: {
     flexDirection: 'row',

@@ -4,6 +4,7 @@ import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import type { RootStackParamList } from '../../App';
 import { useAge } from '../context/AgeContext';
 import { MAX_AGE, MIN_AGE } from '../data/difficulty';
+import AnimatedCreature from '../components/AnimatedCreature';
 import { colors } from '../theme';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'Home'>;
@@ -47,7 +48,9 @@ export default function HomeScreen({ navigation }: Props) {
               pressed && styles.pressed,
             ]}
           >
-            <Text style={styles.tileEmoji}>{tile.emoji}</Text>
+            <View style={styles.tileIconWrap}>
+              <AnimatedCreature emoji={tile.emoji} motion="idle" size={44} />
+            </View>
             <Text style={styles.tileTitle}>{tile.title}</Text>
           </Pressable>
         ))}
@@ -121,8 +124,7 @@ const styles = StyleSheet.create({
   pressed: {
     transform: [{ scale: 0.97 }],
   },
-  tileEmoji: {
-    fontSize: 48,
+  tileIconWrap: {
     marginBottom: 8,
   },
   tileTitle: {

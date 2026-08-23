@@ -1,39 +1,41 @@
 import { pickOne, shuffle } from '../utils/random';
 import { AlphabetMode } from './difficulty';
+import { MotionType } from './motion';
 
 export type LetterItem = {
   letter: string;
   emoji: string;
   word: string;
+  motion: MotionType;
 };
 
 export const letterItems: LetterItem[] = [
-  { letter: 'A', emoji: '🍎', word: 'Apple' },
-  { letter: 'B', emoji: '⚽', word: 'Ball' },
-  { letter: 'C', emoji: '🐱', word: 'Cat' },
-  { letter: 'D', emoji: '🐶', word: 'Dog' },
-  { letter: 'E', emoji: '🥚', word: 'Egg' },
-  { letter: 'F', emoji: '🐟', word: 'Fish' },
-  { letter: 'G', emoji: '🍇', word: 'Grapes' },
-  { letter: 'H', emoji: '🏠', word: 'House' },
-  { letter: 'I', emoji: '🍦', word: 'Ice cream' },
-  { letter: 'J', emoji: '🧃', word: 'Juice' },
-  { letter: 'K', emoji: '🔑', word: 'Key' },
-  { letter: 'L', emoji: '🦁', word: 'Lion' },
-  { letter: 'M', emoji: '🌙', word: 'Moon' },
-  { letter: 'N', emoji: '🥜', word: 'Nut' },
-  { letter: 'O', emoji: '🍊', word: 'Orange' },
-  { letter: 'P', emoji: '🐷', word: 'Pig' },
-  { letter: 'Q', emoji: '👑', word: 'Queen' },
-  { letter: 'R', emoji: '🐰', word: 'Rabbit' },
-  { letter: 'S', emoji: '☀️', word: 'Sun' },
-  { letter: 'T', emoji: '🌳', word: 'Tree' },
-  { letter: 'U', emoji: '☂️', word: 'Umbrella' },
-  { letter: 'V', emoji: '🎻', word: 'Violin' },
-  { letter: 'W', emoji: '⌚', word: 'Watch' },
-  { letter: 'X', emoji: '🩻', word: 'X-ray' },
-  { letter: 'Y', emoji: '🪀', word: 'Yo-yo' },
-  { letter: 'Z', emoji: '🦓', word: 'Zebra' },
+  { letter: 'A', emoji: '🍎', word: 'Apple', motion: 'idle' },
+  { letter: 'B', emoji: '⚽', word: 'Ball', motion: 'hop' },
+  { letter: 'C', emoji: '🐱', word: 'Cat', motion: 'walk' },
+  { letter: 'D', emoji: '🐶', word: 'Dog', motion: 'walk' },
+  { letter: 'E', emoji: '🥚', word: 'Egg', motion: 'idle' },
+  { letter: 'F', emoji: '🐟', word: 'Fish', motion: 'swim' },
+  { letter: 'G', emoji: '🍇', word: 'Grapes', motion: 'idle' },
+  { letter: 'H', emoji: '🏠', word: 'House', motion: 'idle' },
+  { letter: 'I', emoji: '🍦', word: 'Ice cream', motion: 'idle' },
+  { letter: 'J', emoji: '🧃', word: 'Juice', motion: 'idle' },
+  { letter: 'K', emoji: '🔑', word: 'Key', motion: 'idle' },
+  { letter: 'L', emoji: '🦁', word: 'Lion', motion: 'walk' },
+  { letter: 'M', emoji: '🌙', word: 'Moon', motion: 'idle' },
+  { letter: 'N', emoji: '🥜', word: 'Nut', motion: 'idle' },
+  { letter: 'O', emoji: '🍊', word: 'Orange', motion: 'idle' },
+  { letter: 'P', emoji: '🐷', word: 'Pig', motion: 'walk' },
+  { letter: 'Q', emoji: '👑', word: 'Queen', motion: 'idle' },
+  { letter: 'R', emoji: '🐰', word: 'Rabbit', motion: 'hop' },
+  { letter: 'S', emoji: '☀️', word: 'Sun', motion: 'idle' },
+  { letter: 'T', emoji: '🌳', word: 'Tree', motion: 'idle' },
+  { letter: 'U', emoji: '☂️', word: 'Umbrella', motion: 'idle' },
+  { letter: 'V', emoji: '🎻', word: 'Violin', motion: 'idle' },
+  { letter: 'W', emoji: '⌚', word: 'Watch', motion: 'idle' },
+  { letter: 'X', emoji: '🩻', word: 'X-ray', motion: 'idle' },
+  { letter: 'Y', emoji: '🪀', word: 'Yo-yo', motion: 'hop' },
+  { letter: 'Z', emoji: '🦓', word: 'Zebra', motion: 'walk' },
 ];
 
 export type AlphabetQuestion = {

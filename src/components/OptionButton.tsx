@@ -1,5 +1,5 @@
 import React from 'react';
-import { Pressable, StyleSheet, Text } from 'react-native';
+import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { colors } from '../theme';
 
 type Status = 'default' | 'correct' | 'wrong';
@@ -9,6 +9,7 @@ type Props = {
   status: Status;
   disabled?: boolean;
   onPress: () => void;
+  icon?: React.ReactNode;
 };
 
 const statusColor: Record<Status, string> = {
@@ -17,8 +18,8 @@ const statusColor: Record<Status, string> = {
   wrong: colors.wrong,
 };
 
-export default function OptionButton({ label, status, disabled, onPress }: Props) {
-  const isMultiline = label.includes('\n');
+export default function OptionButton({ label, status, disabled, onPress, icon }: Props) {
+  const useSmallFont = Boolean(icon) || label.includes('\n') || label.length > 6;
 
   return (
     <Pressable
@@ -30,10 +31,11 @@ export default function OptionButton({ label, status, disabled, onPress }: Props
         pressed && styles.pressed,
       ]}
     >
+      {icon && <View style={styles.iconWrap}>{icon}</View>}
       <Text
         style={[
           styles.label,
-          isMultiline && styles.labelMultiline,
+          useSmallFont && styles.labelSmall,
           status !== 'default' && styles.labelOnColor,
         ]}
       >
@@ -61,13 +63,16 @@ const styles = StyleSheet.create({
   pressed: {
     transform: [{ scale: 0.96 }],
   },
+  iconWrap: {
+    marginBottom: 4,
+  },
   label: {
     fontSize: 28,
     fontWeight: '700',
     color: colors.text,
     textAlign: 'center',
   },
-  labelMultiline: {
+  labelSmall: {
     fontSize: 18,
   },
   labelOnColor: {
