@@ -1,49 +1,50 @@
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useMemo, useState } from 'react';
 import { SafeAreaView, StyleSheet, Text, View } from 'react-native';
+import type { NativeStackScreenProps } from '@react-navigation/native-stack';
+import type { RootStackParamList } from '../../App';
 import OptionButton from '../components/OptionButton';
-import ScoreBadge from '../components/ScoreBadge';
+import ProgressBar from '../components/ProgressBar';
 import CelebrationOverlay from '../components/CelebrationOverlay';
-import { EnglishQuestion, generateEnglishQuestion } from '../data/englishData';
+import LevelCompleteCard from '../components/LevelCompleteCard';
+import { generateEnglishQuestion } from '../data/englishData';
+import { englishTierFor } from '../data/difficulty';
+import { useAge } from '../context/AgeContext';
+import { useLevelRound } from '../hooks/useLevelRound';
+import { unlockNextLevel } from '../data/progress';
 import { colors } from '../theme';
 
-export default function EnglishGameScreen() {
-  const [question, setQuestion] = useState<EnglishQuestion>(() => generateEnglishQuestion());
-  const [wrongOptions, setWrongOptions] = useState<string[]>([]);
-  const [solved, setSolved] = useState(false);
-  const [score, setScore] = useState(0);
+type Props = NativeStackScreenProps<RootStackParamList, 'English'>;
+
+export default function EnglishGameScreen({ route, navigation }: Props) {
+  return <EnglishLevelRound key={route.params.level} level={route.params.level} navigation={navigation} />;
+}
+
+function EnglishLevelRound({ level, navigation }: { level: number; navigation: Props['navigation'] }) {
+  const { age } = useAge();
+  const tier = useMemo(() => englishTierFor(age, level), [age, level]);
   const [celebrate, setCelebrate] = useState(false);
 
-  const nextQuestion = useCallback(() => {
-    setQuestion(generateEnglishQuestion());
-    setWrongOptions([]);
-    setSolved(false);
-  }, []);
+  const { question, questionNumber, totalQuestions, wrongPicks, solved, completed, stars, select } =
+    useLevelRound({
+      generateQuestion: useCallback(() => generateEnglishQuestion(tier), [tier]),
+      getAnswer: (q) => q.card.word,
+    });
 
   const onSelect = (option: string) => {
-    if (solved) return;
-
-    if (option === question.card.word) {
-      setSolved(true);
-      const newScore = score + 1;
-      setScore(newScore);
-      if (newScore % 5 === 0) {
-        setCelebrate(true);
-      }
-      setTimeout(nextQuestion, 900);
-    } else {
-      setWrongOptions((prev) => [...prev, option]);
-    }
+    select(option, () => {
+      if (questionNumber % 5 === 0) setCelebrate(true);
+    });
   };
 
   const statusFor = (option: string) => {
     if (solved && option === question.card.word) return 'correct';
-    if (wrongOptions.includes(option)) return 'wrong';
+    if (wrongPicks.includes(option)) return 'wrong';
     return 'default';
   };
 
   return (
     <SafeAreaView style={styles.container}>
-      <ScoreBadge score={score} />
+      <ProgressBar current={Math.min(questionNumber, totalQuestions)} total={totalQuestions} color={colors.english} />
       <Text style={styles.prompt}>Bu nədir?</Text>
       <Text style={styles.emoji}>{question.card.emoji}</Text>
       <View style={styles.options}>
@@ -58,6 +59,21 @@ export default function EnglishGameScreen() {
         ))}
       </View>
       <CelebrationOverlay visible={celebrate} onDone={() => setCelebrate(false)} />
+      {completed && (
+        <LevelCompleteCard
+          level={level}
+          stars={stars}
+          color={colors.english}
+          onNextLevel={async () => {
+            await unlockNextLevel('English', age, level);
+            navigation.setParams({ level: level + 1 });
+          }}
+          onBackToLevels={async () => {
+            await unlockNextLevel('English', age, level);
+            navigation.goBack();
+          }}
+        />
+      )}
     </SafeAreaView>
   );
 }

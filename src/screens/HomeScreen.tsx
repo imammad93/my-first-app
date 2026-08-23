@@ -1,26 +1,46 @@
 import React from 'react';
-import { Pressable, SafeAreaView, StyleSheet, Text, View } from 'react-native';
+import { Pressable, SafeAreaView, ScrollView, StyleSheet, Text, View } from 'react-native';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import type { RootStackParamList } from '../../App';
+import { useAge } from '../context/AgeContext';
+import { MAX_AGE, MIN_AGE } from '../data/difficulty';
 import { colors } from '../theme';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'Home'>;
 
-const tiles: { title: string; emoji: string; color: string; screen: keyof RootStackParamList }[] = [
-  { title: 'Riyaziyyat', emoji: '🔢', color: colors.math, screen: 'Math' },
-  { title: 'İngilis dili', emoji: '🗣️', color: colors.english, screen: 'English' },
-  { title: 'Əlifba', emoji: '🔤', color: colors.alphabet, screen: 'Alphabet' },
+const tiles: { title: string; emoji: string; color: string; game: 'Math' | 'English' | 'Alphabet' }[] = [
+  { title: 'Riyaziyyat', emoji: '🔢', color: colors.math, game: 'Math' },
+  { title: 'İngilis dili', emoji: '🗣️', color: colors.english, game: 'English' },
+  { title: 'Əlifba', emoji: '🔤', color: colors.alphabet, game: 'Alphabet' },
 ];
 
+const ages = Array.from({ length: MAX_AGE - MIN_AGE + 1 }, (_, i) => MIN_AGE + i);
+
 export default function HomeScreen({ navigation }: Props) {
+  const { age, setAge, ready } = useAge();
+
   return (
     <SafeAreaView style={styles.container}>
       <Text style={styles.title}>Öyrən və Oyna! 🎈</Text>
+
+      <Text style={styles.ageLabel}>Yaşını seç</Text>
+      <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.ageRow} contentContainerStyle={styles.ageRowContent}>
+        {ages.map((a) => (
+          <Pressable
+            key={a}
+            onPress={() => setAge(a)}
+            style={[styles.ageChip, ready && a === age && styles.ageChipSelected]}
+          >
+            <Text style={[styles.ageChipLabel, ready && a === age && styles.ageChipLabelSelected]}>{a}</Text>
+          </Pressable>
+        ))}
+      </ScrollView>
+
       <View style={styles.tileList}>
         {tiles.map((tile) => (
           <Pressable
-            key={tile.screen}
-            onPress={() => navigation.navigate(tile.screen as never)}
+            key={tile.game}
+            onPress={() => navigation.navigate('LevelSelect', { game: tile.game })}
             style={({ pressed }) => [
               styles.tile,
               { backgroundColor: tile.color },
@@ -41,13 +61,47 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: colors.background,
     alignItems: 'center',
-    paddingTop: 40,
+    paddingTop: 32,
   },
   title: {
     fontSize: 30,
     fontWeight: '800',
     color: colors.text,
-    marginBottom: 24,
+    marginBottom: 16,
+  },
+  ageLabel: {
+    fontSize: 14,
+    fontWeight: '700',
+    color: colors.text,
+    marginBottom: 8,
+  },
+  ageRow: {
+    maxHeight: 56,
+    marginBottom: 16,
+  },
+  ageRowContent: {
+    paddingHorizontal: 16,
+  },
+  ageChip: {
+    width: 44,
+    height: 44,
+    borderRadius: 22,
+    backgroundColor: colors.white,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginHorizontal: 5,
+    elevation: 2,
+  },
+  ageChipSelected: {
+    backgroundColor: colors.home,
+  },
+  ageChipLabel: {
+    fontSize: 16,
+    fontWeight: '700',
+    color: colors.text,
+  },
+  ageChipLabelSelected: {
+    color: colors.white,
   },
   tileList: {
     width: '100%',

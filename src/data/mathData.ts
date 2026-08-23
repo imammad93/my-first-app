@@ -1,9 +1,10 @@
 import { randomInt, shuffle } from '../utils/random';
+import { MathDifficulty } from './difficulty';
 
 export type MathQuestion = {
   a: number;
   b: number;
-  op: '+' | '-';
+  op: '+' | '-' | '×' | '÷';
   answer: number;
   options: number[];
 };
@@ -20,22 +21,37 @@ function distractorsFor(answer: number): number[] {
   return [...pool];
 }
 
-export function generateMathQuestion(): MathQuestion {
-  const isAddition = Math.random() < 0.6;
-
-  if (isAddition) {
-    const a = randomInt(1, 9);
-    const b = randomInt(1, 9 - a >= 1 ? 9 - a : 1);
-    const answer = a + b;
-    const options = shuffle([answer, ...distractorsFor(answer)]);
-    return { a, b, op: '+', answer, options };
-  }
-
-  const a = randomInt(2, 10);
-  const b = randomInt(1, a);
-  const answer = a - b;
+function buildQuestion(a: number, b: number, op: MathQuestion['op'], answer: number): MathQuestion {
   const options = shuffle([answer, ...distractorsFor(answer)]);
-  return { a, b, op: '-', answer, options };
+  return { a, b, op, answer, options };
+}
+
+export function generateMathQuestion(diff: MathDifficulty): MathQuestion {
+  const op = diff.ops[randomInt(0, diff.ops.length - 1)];
+
+  switch (op) {
+    case '+': {
+      const a = randomInt(1, Math.max(1, diff.maxNumber - 1));
+      const b = randomInt(1, Math.max(1, diff.maxNumber - a));
+      return buildQuestion(a, b, '+', a + b);
+    }
+    case '-': {
+      const a = randomInt(2, diff.maxNumber);
+      const b = randomInt(1, a);
+      return buildQuestion(a, b, '-', a - b);
+    }
+    case '×': {
+      const a = randomInt(1, diff.multiplierMax);
+      const b = randomInt(1, diff.multiplierMax);
+      return buildQuestion(a, b, '×', a * b);
+    }
+    case '÷': {
+      const b = randomInt(2, diff.multiplierMax);
+      const quotient = randomInt(1, diff.multiplierMax);
+      const a = b * quotient;
+      return buildQuestion(a, b, '÷', quotient);
+    }
+  }
 }
 
 export function emojiRow(count: number): string {

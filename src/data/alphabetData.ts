@@ -1,4 +1,5 @@
 import { pickOne, shuffle } from '../utils/random';
+import { AlphabetMode } from './difficulty';
 
 export type LetterItem = {
   letter: string;
@@ -23,28 +24,41 @@ export const letterItems: LetterItem[] = [
   { letter: 'N', emoji: '🥜', word: 'Nut' },
   { letter: 'O', emoji: '🍊', word: 'Orange' },
   { letter: 'P', emoji: '🐷', word: 'Pig' },
-  { letter: 'Q', emoji: '👸', word: 'Queen' },
+  { letter: 'Q', emoji: '👑', word: 'Queen' },
   { letter: 'R', emoji: '🐰', word: 'Rabbit' },
   { letter: 'S', emoji: '☀️', word: 'Sun' },
   { letter: 'T', emoji: '🌳', word: 'Tree' },
   { letter: 'U', emoji: '☂️', word: 'Umbrella' },
   { letter: 'V', emoji: '🎻', word: 'Violin' },
   { letter: 'W', emoji: '⌚', word: 'Watch' },
-  { letter: 'X', emoji: '🎷', word: 'Saxophone' },
+  { letter: 'X', emoji: '🩻', word: 'X-ray' },
   { letter: 'Y', emoji: '🪀', word: 'Yo-yo' },
   { letter: 'Z', emoji: '🦓', word: 'Zebra' },
 ];
 
 export type AlphabetQuestion = {
+  mode: AlphabetMode;
   target: LetterItem;
-  options: LetterItem[];
+  /** For pick-picture modes: the letter items to choose from. For pick-letter: unused. */
+  itemOptions: LetterItem[];
+  /** For pick-letter mode: the letters to choose from. */
+  letterOptions: string[];
 };
 
-export function generateAlphabetQuestion(): AlphabetQuestion {
+export function generateAlphabetQuestion(mode: AlphabetMode): AlphabetQuestion {
   const target = pickOne(letterItems);
-  const distractors = shuffle(
-    letterItems.filter((item) => item.letter !== target.letter)
-  ).slice(0, 2);
-  const options = shuffle([target, ...distractors]);
-  return { target, options };
+  const distractors = shuffle(letterItems.filter((item) => item.letter !== target.letter));
+
+  if (mode === 'pick-letter') {
+    const distractorLetters = distractors.slice(0, 3).map((item) => item.letter);
+    return {
+      mode,
+      target,
+      itemOptions: [],
+      letterOptions: shuffle([target.letter, ...distractorLetters]),
+    };
+  }
+
+  const itemOptions = shuffle([target, ...distractors.slice(0, 2)]);
+  return { mode, target, itemOptions, letterOptions: [] };
 }

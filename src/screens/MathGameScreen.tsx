@@ -1,55 +1,59 @@
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useMemo, useState } from 'react';
 import { SafeAreaView, StyleSheet, Text, View } from 'react-native';
+import type { NativeStackScreenProps } from '@react-navigation/native-stack';
+import type { RootStackParamList } from '../../App';
 import OptionButton from '../components/OptionButton';
-import ScoreBadge from '../components/ScoreBadge';
+import ProgressBar from '../components/ProgressBar';
 import CelebrationOverlay from '../components/CelebrationOverlay';
-import { emojiRow, generateMathQuestion, MathQuestion } from '../data/mathData';
+import LevelCompleteCard from '../components/LevelCompleteCard';
+import { emojiRow, generateMathQuestion } from '../data/mathData';
+import { mathDifficultyFor } from '../data/difficulty';
+import { useAge } from '../context/AgeContext';
+import { useLevelRound } from '../hooks/useLevelRound';
+import { unlockNextLevel } from '../data/progress';
 import { colors } from '../theme';
 
-export default function MathGameScreen() {
-  const [question, setQuestion] = useState<MathQuestion>(() => generateMathQuestion());
-  const [wrongOptions, setWrongOptions] = useState<number[]>([]);
-  const [solved, setSolved] = useState(false);
-  const [score, setScore] = useState(0);
+type Props = NativeStackScreenProps<RootStackParamList, 'Math'>;
+
+export default function MathGameScreen({ route, navigation }: Props) {
+  return <MathLevelRound key={route.params.level} level={route.params.level} navigation={navigation} />;
+}
+
+function MathLevelRound({ level, navigation }: { level: number; navigation: Props['navigation'] }) {
+  const { age } = useAge();
+  const difficulty = useMemo(() => mathDifficultyFor(age, level), [age, level]);
   const [celebrate, setCelebrate] = useState(false);
 
-  const nextQuestion = useCallback(() => {
-    setQuestion(generateMathQuestion());
-    setWrongOptions([]);
-    setSolved(false);
-  }, []);
+  const { question, questionNumber, totalQuestions, wrongPicks, solved, completed, stars, select } =
+    useLevelRound({
+      generateQuestion: useCallback(() => generateMathQuestion(difficulty), [difficulty]),
+      getAnswer: (q) => q.answer,
+    });
 
   const onSelect = (option: number) => {
-    if (solved) return;
-
-    if (option === question.answer) {
-      setSolved(true);
-      const newScore = score + 1;
-      setScore(newScore);
-      if (newScore % 5 === 0) {
-        setCelebrate(true);
-      }
-      setTimeout(nextQuestion, 900);
-    } else {
-      setWrongOptions((prev) => [...prev, option]);
-    }
+    select(option, () => {
+      const nextScore = questionNumber;
+      if (nextScore % 5 === 0) setCelebrate(true);
+    });
   };
 
   const statusFor = (option: number) => {
     if (solved && option === question.answer) return 'correct';
-    if (wrongOptions.includes(option)) return 'wrong';
+    if (wrongPicks.includes(option)) return 'wrong';
     return 'default';
   };
 
+  const showEmojiHint = question.a <= 10 && question.b <= 10;
+
   return (
     <SafeAreaView style={styles.container}>
-      <ScoreBadge score={score} />
+      <ProgressBar current={Math.min(questionNumber, totalQuestions)} total={totalQuestions} color={colors.math} />
       <View style={styles.card}>
-        <Text style={styles.emojiRow}>{emojiRow(question.a)}</Text>
+        {showEmojiHint && <Text style={styles.emojiRow}>{emojiRow(question.a)}</Text>}
         <Text style={styles.equation}>
           {question.a} {question.op} {question.b} = ?
         </Text>
-        {question.op === '-' && <Text style={styles.emojiRow}>{emojiRow(question.b)}</Text>}
+        {showEmojiHint && question.op === '-' && <Text style={styles.emojiRow}>{emojiRow(question.b)}</Text>}
       </View>
       <View style={styles.options}>
         {question.options.map((option) => (
@@ -63,6 +67,21 @@ export default function MathGameScreen() {
         ))}
       </View>
       <CelebrationOverlay visible={celebrate} onDone={() => setCelebrate(false)} />
+      {completed && (
+        <LevelCompleteCard
+          level={level}
+          stars={stars}
+          color={colors.math}
+          onNextLevel={async () => {
+            await unlockNextLevel('Math', age, level);
+            navigation.setParams({ level: level + 1 });
+          }}
+          onBackToLevels={async () => {
+            await unlockNextLevel('Math', age, level);
+            navigation.goBack();
+          }}
+        />
+      )}
     </SafeAreaView>
   );
 }
@@ -80,12 +99,12 @@ const styles = StyleSheet.create({
     marginBottom: 16,
   },
   emojiRow: {
-    fontSize: 28,
+    fontSize: 22,
     letterSpacing: 2,
     marginVertical: 4,
   },
   equation: {
-    fontSize: 44,
+    fontSize: 40,
     fontWeight: '800',
     color: colors.math,
     marginVertical: 8,
