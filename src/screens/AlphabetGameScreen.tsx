@@ -2,7 +2,7 @@ import React, { useMemo, useState } from 'react';
 import { SafeAreaView, StyleSheet, Text, View } from 'react-native';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import type { RootStackParamList } from '../../App';
-import OptionButton from '../components/OptionButton';
+import LeafOption from '../components/alphabet/LeafOption';
 import ProgressBar from '../components/ProgressBar';
 import CelebrationOverlay from '../components/CelebrationOverlay';
 import LevelCompleteCard from '../components/LevelCompleteCard';
@@ -63,10 +63,11 @@ function AlphabetLevelRound({ level, navigation }: { level: number; navigation: 
             <AnimatedCreature emoji={question.target.emoji} motion={question.target.motion} size={92} />
           </CreatureStage>
           <View style={styles.options}>
-            {question.letterOptions.map((letter) => (
-              <OptionButton
+            {question.letterOptions.map((letter, i) => (
+              <LeafOption
                 key={letter}
                 label={letter}
+                index={i}
                 status={statusFor(letter)}
                 disabled={solved}
                 onPress={() => onSelect(letter)}
@@ -79,11 +80,13 @@ function AlphabetLevelRound({ level, navigation }: { level: number; navigation: 
           <Text style={styles.prompt}>Bu hərflə başlayanı tap:</Text>
           <Text style={styles.letter}>{displayLetter}</Text>
           <View style={styles.options}>
-            {question.itemOptions.map((item) => (
-              <OptionButton
+            {question.itemOptions.map((item, i) => (
+              <LeafOption
                 key={item.letter}
                 label={item.word}
-                icon={<AnimatedCreature emoji={item.emoji} motion="idle" size={30} />}
+                icon={<AnimatedCreature emoji={item.emoji} motion="idle" size={26} />}
+                index={i}
+                useSmallFont
                 status={statusFor(item.letter)}
                 disabled={solved}
                 onPress={() => onSelect(item.letter)}
