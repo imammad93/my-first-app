@@ -1,442 +1,177 @@
 import React, { useMemo, useRef, useState } from 'react';
-import {
-  Animated,
-  Easing,
-  Pressable,
-  SafeAreaView,
-  StyleSheet,
-  Text,
-  View,
-} from 'react-native';
-import Svg, {
-  Circle,
-  Defs,
-  LinearGradient,
-  Path,
-  Stop,
-} from 'react-native-svg';
-
-const WORLD = require('./world-map-interactive.json') as WorldMapData;
-
-type Country = {
-  id: string;
-  iso2?: string | null;
-  nameAz: string;
-  nameEn: string;
-  capital: string;
-  region: string;
-  center: [number, number];
-  capitalPoint?: [number, number] | null;
-  markerOnly: boolean;
-  path: string;
-};
-
-type WorldMapData = {
-  meta: {
-    viewBox: [number, number, number, number];
-    projection: string;
-    countryCount: number;
-    polygonCountries: number;
-    markerOnlyCountries: number;
-  };
-  countries: Country[];
-};
-
-const VB_WIDTH = 1200;
-const VB_HEIGHT = 600;
-
-function flagFromIso2(iso2?: string | null): string {
-  if (!iso2 || iso2.length !== 2) return '🏳️';
-  const codePoints = [...iso2.toUpperCase()].map((c) => 0x1f1e6 + (c.charCodeAt(0) - 65));
-  return String.fromCodePoint(...codePoints);
-}
+import { Animated, Easing, Pressable, SafeAreaView, StyleSheet, Text, View } from 'react-native';
+import Svg, { Circle, Path } from 'react-native-svg';
+import { CONFIG, Country, VB_HEIGHT, VB_WIDTH, VB_X, VB_Y, computeBboxes, flagFromIso2, regionColorMap } from './mapData';
+import { useMapTransform } from './useMapTransform';
 
 export default function InteractiveWorldMap() {
-  const [selected, setSelected] = useState<Country | null>(null);
-  const cardOpacity = useRef(new Animated.Value(0)).current;
-  const cardScale = useRef(new Animated.Value(0.82)).current;
-  const cardTranslate = useRef(new Animated.Value(18)).current;
+  const { labels, animation, theme } = CONFIG;
+  const countries = useMemo(() => CONFIG.countries, []);
+  const bboxes = useMemo(() => computeBboxes(countries), [countries]);
+  const colorByRegion = useMemo(() => regionColorMap(countries, theme.countryPalette), [countries, theme.countryPalette]);
 
-  const countries = useMemo(() => WORLD.countries, []);
+  const [selected, setSelected] = useState<Country | null>(null);
+  const { scale, translateX, translateY, zoomed, fitToBbox, resetView, zoomByStep, panHandlers, onFrameLayout } =
+    useMapTransform();
+
+  const cardOpacity = useRef(new Animated.Value(0)).current;
+  const cardScale = useRef(new Animated.Value(animation.infoCard.initialScale)).current;
+  const glowPulse = useRef(new Animated.Value(0)).current;
 
   const openCountry = (country: Country) => {
     setSelected(country);
-    cardOpacity.setValue(0);
-    cardScale.setValue(0.82);
-    cardTranslate.setValue(18);
+    const bb = bboxes[country.id];
+    if (bb) fitToBbox(bb, animation.countryZoomDurationMs);
 
-    Animated.parallel([
-      Animated.timing(cardOpacity, {
-        toValue: 1,
-        duration: 220,
+    cardOpacity.setValue(0);
+    cardScale.setValue(animation.infoCard.initialScale);
+    Animated.timing(cardOpacity, { toValue: 1, duration: animation.infoCard.durationMs, useNativeDriver: true }).start();
+    Animated.sequence([
+      Animated.timing(cardScale, {
+        toValue: animation.infoCard.overshootScale,
+        duration: animation.infoCard.durationMs * 0.6,
         easing: Easing.out(Easing.quad),
         useNativeDriver: true,
       }),
-      Animated.spring(cardScale, {
-        toValue: 1,
-        friction: 7,
-        tension: 90,
-        useNativeDriver: true,
-      }),
-      Animated.timing(cardTranslate, {
-        toValue: 0,
-        duration: 260,
-        easing: Easing.out(Easing.cubic),
-        useNativeDriver: true,
-      }),
+      Animated.timing(cardScale, { toValue: 1, duration: animation.infoCard.durationMs * 0.4, useNativeDriver: true }),
     ]).start();
+
+    glowPulse.setValue(0);
+    Animated.loop(
+      Animated.sequence([
+        Animated.timing(glowPulse, { toValue: 1, duration: 700, useNativeDriver: false }),
+        Animated.timing(glowPulse, { toValue: 0, duration: 700, useNativeDriver: false }),
+      ])
+    ).start();
   };
 
-  const closeCountry = () => {
-    Animated.parallel([
-      Animated.timing(cardOpacity, {
-        toValue: 0,
-        duration: 150,
-        useNativeDriver: true,
-      }),
-      Animated.timing(cardScale, {
-        toValue: 0.9,
-        duration: 150,
-        useNativeDriver: true,
-      }),
-    ]).start(() => setSelected(null));
+  const closeCard = () => {
+    Animated.timing(cardOpacity, { toValue: 0, duration: 150, useNativeDriver: true }).start(() => setSelected(null));
   };
+
+  const onViewMap = () => {
+    closeCard();
+    resetView(CONFIG.interaction.reset.resetDurationMs);
+  };
+
+  const glowOpacity = glowPulse.interpolate({ inputRange: [0, 1], outputRange: [0.35, 0.9] });
 
   return (
-    <SafeAreaView style={styles.screen}>
+    <SafeAreaView style={[styles.screen, { backgroundColor: theme.ocean }]}>
       <View style={styles.header}>
-        <Text style={styles.eyebrow}>KIDS EXPLORER</Text>
-        <Text style={styles.title}>Dünya xəritəsi</Text>
-        <Text style={styles.subtitle}>
-          Ölkəyə toxun — adı və paytaxtı ortaya çıxsın.
-        </Text>
+        <Text style={styles.title}>{labels.title}</Text>
+        <Text style={styles.subtitle}>{labels.subtitle}</Text>
       </View>
 
-      <View style={styles.mapCard}>
-        <View style={styles.glowA} />
-        <View style={styles.glowB} />
-
-        <View style={styles.mapFrame}>
-          <Svg
-            width="100%"
-            height="100%"
-            viewBox={`0 0 ${VB_WIDTH} ${VB_HEIGHT}`}
-          >
-            <Defs>
-              <LinearGradient id="countryGradient" x1="0" y1="0" x2="0" y2="1">
-                <Stop offset="0" stopColor="#79E9FF" stopOpacity="1" />
-                <Stop offset="0.52" stopColor="#24AEEB" stopOpacity="1" />
-                <Stop offset="1" stopColor="#0A6BB5" stopOpacity="1" />
-              </LinearGradient>
-              <LinearGradient id="selectedGradient" x1="0" y1="0" x2="1" y2="1">
-                <Stop offset="0" stopColor="#E8FDFF" stopOpacity="1" />
-                <Stop offset="0.45" stopColor="#86F2FF" stopOpacity="1" />
-                <Stop offset="1" stopColor="#25C8FF" stopOpacity="1" />
-              </LinearGradient>
-            </Defs>
-
-            {/* Dark offset layer = simple 3D/extruded depth */}
+      <View style={[styles.mapFrame, { backgroundColor: theme.ocean }]} onLayout={onFrameLayout} {...panHandlers}>
+        <Animated.View style={{ width: '100%', height: '100%', transform: [{ translateX }, { translateY }, { scale }] }}>
+          <Svg width="100%" height="100%" viewBox={`${VB_X} ${VB_Y} ${VB_WIDTH} ${VB_HEIGHT}`}>
             {countries
-              .filter((country) => !country.markerOnly && country.path)
-              .map((country) => (
-                <Path
-                  key={`shadow-${country.id}`}
-                  d={country.path}
-                  fill="#073B67"
-                  stroke="#052743"
-                  strokeWidth={1.15}
-                  fillRule="evenodd"
-                  transform="translate(0 6)"
-                  opacity={0.82}
-                />
-              ))}
-
-            {/* Main interactive country shapes */}
-            {countries
-              .filter((country) => !country.markerOnly && country.path)
-              .map((country) => {
-                const isSelected = selected?.id === country.id;
+              .filter((c) => !c.markerOnly && c.path)
+              .map((c) => {
+                const isSelected = selected?.id === c.id;
                 return (
                   <Path
-                    key={country.id}
-                    d={country.path}
-                    fill={isSelected ? 'url(#selectedGradient)' : 'url(#countryGradient)'}
-                    stroke={isSelected ? '#FFFFFF' : '#C9F4FF'}
-                    strokeWidth={isSelected ? 2.2 : 0.9}
+                    key={c.id}
+                    d={c.path}
+                    fill={isSelected ? animation.selectedCountry.fill : colorByRegion[c.region]}
+                    stroke={isSelected ? animation.selectedCountry.stroke : '#FFFFFF'}
+                    strokeWidth={isSelected ? 1.6 : 0.6}
                     fillRule="evenodd"
-                    onPress={() => openCountry(country)}
+                    onPress={() => openCountry(c)}
                   />
                 );
               })}
 
-            {/* Countries too small for low-res polygons are still tappable as markers */}
             {countries
-              .filter((country) => country.markerOnly)
-              .map((country) => {
-                const isSelected = selected?.id === country.id;
-                const [cx, cy] = country.center;
+              .filter((c) => c.markerOnly)
+              .map((c) => {
+                const isSelected = selected?.id === c.id;
+                const [cx, cy] = c.center;
                 return (
                   <Circle
-                    key={`marker-${country.id}`}
+                    key={`marker-${c.id}`}
                     cx={cx}
                     cy={cy}
-                    r={isSelected ? 7.5 : 5.2}
-                    fill={isSelected ? '#E9FEFF' : '#61DBFF'}
+                    r={isSelected ? 6.5 : 4.5}
+                    fill={isSelected ? animation.selectedCountry.fill : colorByRegion[c.region]}
                     stroke="#FFFFFF"
-                    strokeWidth={isSelected ? 2.2 : 1.1}
-                    onPress={() => openCountry(country)}
+                    strokeWidth={1}
+                    onPress={() => openCountry(c)}
                   />
                 );
               })}
 
-            {/* Capital marker for selected country */}
             {selected?.capitalPoint ? (
-              <>
-                <Circle
-                  cx={selected.capitalPoint[0]}
-                  cy={selected.capitalPoint[1]}
-                  r={8}
-                  fill="#FFFFFF"
-                  opacity={0.25}
-                />
-                <Circle
-                  cx={selected.capitalPoint[0]}
-                  cy={selected.capitalPoint[1]}
-                  r={3.8}
-                  fill="#FFFFFF"
-                />
-              </>
+              <Circle cx={selected.capitalPoint[0]} cy={selected.capitalPoint[1]} r={3.2} fill="#FFFFFF" stroke="#094B9B" strokeWidth={1} />
             ) : null}
           </Svg>
+        </Animated.View>
+
+        {selected ? <Animated.View pointerEvents="none" style={[styles.glowRing, { opacity: glowOpacity }]} /> : null}
+
+        <View style={styles.zoomControls}>
+          <Pressable style={styles.zoomBtn} onPress={() => zoomByStep(1)} accessibilityLabel={labels.zoomIn}>
+            <Text style={styles.zoomBtnText}>+</Text>
+          </Pressable>
+          <Pressable style={styles.zoomBtn} onPress={() => zoomByStep(-1)} accessibilityLabel={labels.zoomOut}>
+            <Text style={styles.zoomBtnText}>−</Text>
+          </Pressable>
         </View>
 
-        <View style={styles.hintPill}>
-          <View style={styles.hintDot} />
-          <Text style={styles.hintText}>
-            {selected
-              ? `${flagFromIso2(selected.iso2)} ${selected.nameAz} • ${selected.capital}`
-              : 'Ölkəyə toxun'}
-          </Text>
-        </View>
+        {zoomed ? (
+          <Pressable style={styles.resetBtn} onPress={onViewMap}>
+            <Text style={styles.resetBtnText}>🌍 {labels.viewMapButton}</Text>
+          </Pressable>
+        ) : (
+          <View style={styles.hintPill}>
+            <Text style={styles.hintText}>{labels.tapHint}</Text>
+          </View>
+        )}
       </View>
 
       {selected ? (
-        <View style={styles.overlay} pointerEvents="box-none">
-          <Pressable style={styles.backdrop} onPress={closeCountry} />
-
-          <Animated.View
-            style={[
-              styles.infoCard,
-              {
-                opacity: cardOpacity,
-                transform: [
-                  { scale: cardScale },
-                  { translateY: cardTranslate },
-                ],
-              },
-            ]}
-          >
-            <View style={styles.infoGlow} />
-            <Text style={styles.infoEyebrow}>{flagFromIso2(selected.iso2)} ÖLKƏ</Text>
-            <Text style={styles.countryName}>{selected.nameAz}</Text>
-            <Text style={styles.countryEnglish}>{selected.nameEn}</Text>
-
-            <View style={styles.divider} />
-
-            <Text style={styles.capitalLabel}>Paytaxt</Text>
-            <Text style={styles.capitalName}>{selected.capital}</Text>
-
-            <Pressable
-              onPress={closeCountry}
-              style={({ pressed }) => [
-                styles.closeButton,
-                pressed && styles.closeButtonPressed,
-              ]}
-            >
-              <Text style={styles.closeButtonText}>Bağla</Text>
-            </Pressable>
-          </Animated.View>
-        </View>
+        <Animated.View
+          style={[styles.infoCard, { backgroundColor: theme.cardBackground, opacity: cardOpacity, transform: [{ scale: cardScale }] }]}
+        >
+          <Text style={[styles.selectedMessage, { color: theme.primaryText }]}>{labels.selectedMessage}</Text>
+          <Text style={styles.countryFlag}>{flagFromIso2(selected.iso2)}</Text>
+          <Text style={[styles.countryName, { color: theme.primaryText }]}>{selected.nameAz}</Text>
+          <Text style={styles.countryEnglish}>{selected.nameEn}</Text>
+          <View style={styles.divider} />
+          <Text style={styles.capitalLabel}>{labels.capitalLabel}</Text>
+          <Text style={[styles.capitalName, { color: theme.capitalText }]}>{selected.capital}</Text>
+          <Pressable onPress={closeCard} style={styles.closeButton}>
+            <Text style={styles.closeButtonText}>Bağla</Text>
+          </Pressable>
+        </Animated.View>
       ) : null}
     </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
-  screen: {
-    flex: 1,
-    backgroundColor: '#03101F',
-    paddingHorizontal: 16,
-    paddingTop: 12,
-  },
-  header: {
-    marginBottom: 14,
-  },
-  eyebrow: {
-    color: '#5CDAFF',
-    fontSize: 11,
-    letterSpacing: 2.2,
-    fontWeight: '800',
-  },
-  title: {
-    marginTop: 5,
-    color: '#F3FCFF',
-    fontSize: 30,
-    fontWeight: '900',
-  },
-  subtitle: {
-    marginTop: 5,
-    color: '#A9C8D9',
-    fontSize: 14,
-  },
-  mapCard: {
-    position: 'relative',
-    overflow: 'hidden',
-    borderRadius: 24,
-    backgroundColor: '#071D34',
-    borderWidth: 1,
-    borderColor: 'rgba(124, 221, 255, 0.20)',
-    padding: 10,
-  },
-  glowA: {
-    position: 'absolute',
-    width: 280,
-    height: 280,
-    borderRadius: 140,
-    backgroundColor: 'rgba(36, 173, 235, 0.16)',
-    left: '31%',
-    top: 35,
-  },
-  glowB: {
-    position: 'absolute',
-    width: 180,
-    height: 180,
-    borderRadius: 90,
-    backgroundColor: 'rgba(84, 225, 255, 0.10)',
-    right: 24,
-    bottom: 16,
-  },
-  mapFrame: {
-    width: '100%',
-    aspectRatio: 2,
-  },
-  hintPill: {
-    alignSelf: 'center',
-    minHeight: 38,
-    marginTop: 8,
-    marginBottom: 4,
-    paddingHorizontal: 13,
-    borderRadius: 18,
-    backgroundColor: 'rgba(2, 17, 32, 0.72)',
-    borderWidth: 1,
-    borderColor: 'rgba(131, 224, 255, 0.18)',
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 8,
-  },
-  hintDot: {
-    width: 8,
-    height: 8,
-    borderRadius: 4,
-    backgroundColor: '#68E6FF',
-  },
-  hintText: {
-    color: '#D7F7FF',
-    fontSize: 12,
-    fontWeight: '700',
-  },
-  overlay: {
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    right: 0,
-    bottom: 0,
-    zIndex: 20,
-    alignItems: 'center',
-    justifyContent: 'center',
-    paddingHorizontal: 24,
-  },
-  backdrop: {
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    right: 0,
-    bottom: 0,
-    backgroundColor: 'rgba(0, 7, 16, 0.58)',
-  },
-  infoCard: {
-    width: '100%',
-    maxWidth: 390,
-    overflow: 'hidden',
-    borderRadius: 26,
-    backgroundColor: '#09223E',
-    borderWidth: 1,
-    borderColor: 'rgba(129, 227, 255, 0.35)',
-    padding: 22,
-    shadowColor: '#000000',
-    shadowOffset: { width: 0, height: 20 },
-    shadowOpacity: 0.42,
-    shadowRadius: 30,
-    elevation: 18,
-  },
-  infoGlow: {
-    position: 'absolute',
-    width: 180,
-    height: 180,
-    borderRadius: 90,
-    right: -65,
-    top: -85,
-    backgroundColor: 'rgba(76, 218, 255, 0.14)',
-  },
-  infoEyebrow: {
-    color: '#63DBFF',
-    fontSize: 11,
-    fontWeight: '900',
-    letterSpacing: 2,
-  },
-  countryName: {
-    marginTop: 8,
-    color: '#FFFFFF',
-    fontSize: 33,
-    lineHeight: 39,
-    fontWeight: '900',
-  },
-  countryEnglish: {
-    marginTop: 3,
-    color: '#93B8CA',
-    fontSize: 13,
-  },
-  divider: {
-    height: 1,
-    marginVertical: 18,
-    backgroundColor: 'rgba(128, 222, 255, 0.18)',
-  },
-  capitalLabel: {
-    color: '#93B8CA',
-    fontSize: 12,
-    fontWeight: '700',
-  },
-  capitalName: {
-    marginTop: 4,
-    color: '#EAFBFF',
-    fontSize: 25,
-    fontWeight: '900',
-  },
-  closeButton: {
-    marginTop: 20,
-    minHeight: 48,
-    borderRadius: 15,
-    backgroundColor: '#E7FAFF',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  closeButtonPressed: {
-    opacity: 0.82,
-    transform: [{ scale: 0.985 }],
-  },
-  closeButtonText: {
-    color: '#08233A',
-    fontSize: 15,
-    fontWeight: '900',
-  },
+  screen: { flex: 1, paddingHorizontal: 16, paddingTop: 12 },
+  header: { marginBottom: 14 },
+  title: { color: '#FFFFFF', fontSize: 26, fontWeight: '900' },
+  subtitle: { marginTop: 4, color: '#EAFBFF', fontSize: 14, fontWeight: '600' },
+  mapFrame: { width: '100%', aspectRatio: 2, borderRadius: 24, overflow: 'hidden', borderWidth: 3, borderColor: 'rgba(255,255,255,0.4)' },
+  glowRing: { position: 'absolute', top: 8, left: 8, right: 8, bottom: 8, borderRadius: 18, borderWidth: 3, borderColor: '#FFE34F' },
+  zoomControls: { position: 'absolute', top: 12, right: 12, gap: 8 },
+  zoomBtn: { width: 40, height: 40, borderRadius: 20, backgroundColor: 'rgba(255,255,255,0.92)', alignItems: 'center', justifyContent: 'center', elevation: 4 },
+  zoomBtnText: { fontSize: 22, fontWeight: '900', color: '#094B9B' },
+  resetBtn: { position: 'absolute', bottom: 14, alignSelf: 'center', backgroundColor: 'rgba(255,255,255,0.95)', borderRadius: 18, paddingHorizontal: 16, paddingVertical: 10, elevation: 4 },
+  resetBtnText: { fontSize: 14, fontWeight: '800', color: '#094B9B' },
+  hintPill: { position: 'absolute', bottom: 14, alignSelf: 'center', backgroundColor: 'rgba(9,75,155,0.85)', borderRadius: 18, paddingHorizontal: 16, paddingVertical: 10 },
+  hintText: { color: '#FFFFFF', fontSize: 13, fontWeight: '700' },
+  infoCard: { marginTop: 14, marginBottom: 16, borderRadius: 24, padding: 20, alignItems: 'center', elevation: 8, shadowColor: '#000', shadowOpacity: 0.2, shadowOffset: { width: 0, height: 8 }, shadowRadius: 16 },
+  selectedMessage: { fontSize: 13, fontWeight: '700', marginBottom: 6 },
+  countryFlag: { fontSize: 40, marginBottom: 4 },
+  countryName: { fontSize: 26, fontWeight: '900', textAlign: 'center' },
+  countryEnglish: { fontSize: 13, color: '#7D93A8', marginTop: 2 },
+  divider: { width: '60%', height: 1, backgroundColor: 'rgba(9,75,155,0.15)', marginVertical: 14 },
+  capitalLabel: { fontSize: 12, fontWeight: '700', color: '#7D93A8' },
+  capitalName: { fontSize: 24, fontWeight: '900', marginTop: 2 },
+  closeButton: { marginTop: 16, minWidth: 140, minHeight: 44, borderRadius: 14, backgroundColor: '#094B9B', alignItems: 'center', justifyContent: 'center' },
+  closeButtonText: { color: '#FFFFFF', fontSize: 14, fontWeight: '800' },
 });

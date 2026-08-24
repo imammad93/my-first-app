@@ -6,7 +6,7 @@ import LevelSelectScreen from './src/screens/LevelSelectScreen';
 import MathGameScreen from './src/screens/MathGameScreen';
 import EnglishGameScreen from './src/screens/EnglishGameScreen';
 import AlphabetGameScreen from './src/screens/AlphabetGameScreen';
-import InteractiveWorldMap from './src/components/worldmap/InteractiveWorldMap';
+import WorldMapScreen from './src/screens/WorldMapScreen';
 import { AgeProvider } from './src/context/AgeContext';
 import { colors } from './src/theme';
 import type { GameId } from './src/data/progress';
@@ -56,7 +56,7 @@ export default function App() {
             component={AlphabetGameScreen}
             options={{ title: 'Əlifba', headerStyle: { backgroundColor: colors.alphabet } }}
           />
-          <Stack.Screen name="WorldMap" component={InteractiveWorldMap} options={{ headerShown: false }} />
+          <Stack.Screen name="WorldMap" component={WorldMapScreen} options={{ headerShown: false }} />
         </Stack.Navigator>
       </NavigationContainer>
     </AgeProvider>
