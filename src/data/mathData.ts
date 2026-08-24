@@ -1,5 +1,6 @@
 import { randomInt, shuffle } from '../utils/random';
-import { MathDifficulty } from './difficulty';
+import { generateUniqueSet } from '../utils/uniqueSet';
+import { MathDifficulty, QUESTIONS_PER_LEVEL } from './difficulty';
 
 export type MathQuestion = {
   a: number;
@@ -52,6 +53,17 @@ export function generateMathQuestion(diff: MathDifficulty): MathQuestion {
       return buildQuestion(a, b, '÷', quotient);
     }
   }
+}
+
+export function generateMathQuestionSet(
+  diff: MathDifficulty,
+  count: number = QUESTIONS_PER_LEVEL
+): MathQuestion[] {
+  return generateUniqueSet(
+    () => generateMathQuestion(diff),
+    (q) => `${q.op}:${q.a}:${q.b}`,
+    count
+  );
 }
 
 export function emojiRow(count: number): string {

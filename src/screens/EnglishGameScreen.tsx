@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo, useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import { SafeAreaView, StyleSheet, Text, View } from 'react-native';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import type { RootStackParamList } from '../../App';
@@ -8,7 +8,7 @@ import CelebrationOverlay from '../components/CelebrationOverlay';
 import LevelCompleteCard from '../components/LevelCompleteCard';
 import AnimatedCreature from '../components/AnimatedCreature';
 import CreatureStage from '../components/CreatureStage';
-import { generateEnglishQuestion } from '../data/englishData';
+import { generateEnglishQuestionSet } from '../data/englishData';
 import { englishTierFor } from '../data/difficulty';
 import { useAge } from '../context/AgeContext';
 import { useLevelRound } from '../hooks/useLevelRound';
@@ -24,11 +24,12 @@ export default function EnglishGameScreen({ route, navigation }: Props) {
 function EnglishLevelRound({ level, navigation }: { level: number; navigation: Props['navigation'] }) {
   const { age } = useAge();
   const tier = useMemo(() => englishTierFor(age, level), [age, level]);
+  const questions = useMemo(() => generateEnglishQuestionSet(tier), [tier]);
   const [celebrate, setCelebrate] = useState(false);
 
   const { question, questionNumber, totalQuestions, wrongPicks, solved, completed, stars, select } =
     useLevelRound({
-      generateQuestion: useCallback(() => generateEnglishQuestion(tier), [tier]),
+      questions,
       getAnswer: (q) => q.card.word,
     });
 

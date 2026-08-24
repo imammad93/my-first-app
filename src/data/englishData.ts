@@ -1,5 +1,7 @@
 import { pickOne, shuffle } from '../utils/random';
+import { generateUniqueSet } from '../utils/uniqueSet';
 import { MotionType } from './motion';
+import { QUESTIONS_PER_LEVEL } from './difficulty';
 
 export type WordCard = {
   emoji: string;
@@ -18,6 +20,16 @@ const tier0: WordCard[] = [
   { emoji: '📦', word: 'Box', motion: 'idle' },
   { emoji: '🛏️', word: 'Bed', motion: 'idle' },
   { emoji: '🥚', word: 'Egg', motion: 'idle' },
+  { emoji: '🧦', word: 'Sock', motion: 'idle' },
+  { emoji: '👂', word: 'Ear', motion: 'idle' },
+  { emoji: '👁️', word: 'Eye', motion: 'idle' },
+  { emoji: '🐜', word: 'Ant', motion: 'walk' },
+  { emoji: '🐝', word: 'Bee', motion: 'fly' },
+  { emoji: '🦉', word: 'Owl', motion: 'fly' },
+  { emoji: '🐔', word: 'Hen', motion: 'walk' },
+  { emoji: '🧊', word: 'Ice', motion: 'idle' },
+  { emoji: '🖊️', word: 'Pen', motion: 'idle' },
+  { emoji: '🚌', word: 'Bus', motion: 'idle' },
 ];
 
 const tier1: WordCard[] = [
@@ -31,6 +43,16 @@ const tier1: WordCard[] = [
   { emoji: '🌳', word: 'Tree', motion: 'idle' },
   { emoji: '📕', word: 'Book', motion: 'idle' },
   { emoji: '⚽', word: 'Ball', motion: 'hop' },
+  { emoji: '🐐', word: 'Goat', motion: 'walk' },
+  { emoji: '🐑', word: 'Sheep', motion: 'walk' },
+  { emoji: '🐭', word: 'Mouse', motion: 'walk' },
+  { emoji: '🐍', word: 'Snake', motion: 'walk' },
+  { emoji: '👞', word: 'Shoe', motion: 'idle' },
+  { emoji: '🪁', word: 'Kite', motion: 'fly' },
+  { emoji: '🪺', word: 'Nest', motion: 'idle' },
+  { emoji: '☁️', word: 'Cloud', motion: 'idle' },
+  { emoji: '🌧️', word: 'Rain', motion: 'idle' },
+  { emoji: '🐌', word: 'Snail', motion: 'walk' },
 ];
 
 const tier2: WordCard[] = [
@@ -45,6 +67,15 @@ const tier2: WordCard[] = [
   { emoji: '🐢', word: 'Turtle', motion: 'walk' },
   { emoji: '🎸', word: 'Guitar', motion: 'idle' },
   { emoji: '✈️', word: 'Airplane', motion: 'fly' },
+  { emoji: '🎹', word: 'Piano', motion: 'idle' },
+  { emoji: '🥁', word: 'Drum', motion: 'idle' },
+  { emoji: '📷', word: 'Camera', motion: 'idle' },
+  { emoji: '🎈', word: 'Balloon', motion: 'fly' },
+  { emoji: '🤖', word: 'Robot', motion: 'walk' },
+  { emoji: '🚀', word: 'Rocket', motion: 'fly' },
+  { emoji: '🚲', word: 'Bicycle', motion: 'walk' },
+  { emoji: '⛵', word: 'Boat', motion: 'swim' },
+  { emoji: '🐳', word: 'Whale', motion: 'swim' },
 ];
 
 const tier3: WordCard[] = [
@@ -58,6 +89,16 @@ const tier3: WordCard[] = [
   { emoji: '🦘', word: 'Kangaroo', motion: 'hop' },
   { emoji: '🐊', word: 'Alligator', motion: 'swim' },
   { emoji: '🚁', word: 'Helicopter', motion: 'fly' },
+  { emoji: '🐙', word: 'Octopus', motion: 'swim' },
+  { emoji: '🐧', word: 'Penguin', motion: 'walk' },
+  { emoji: '🦚', word: 'Peacock', motion: 'walk' },
+  { emoji: '🦩', word: 'Flamingo', motion: 'walk' },
+  { emoji: '🐿️', word: 'Squirrel', motion: 'hop' },
+  { emoji: '🦔', word: 'Hedgehog', motion: 'walk' },
+  { emoji: '🪼', word: 'Jellyfish', motion: 'swim' },
+  { emoji: '🧭', word: 'Compass', motion: 'idle' },
+  { emoji: '🎒', word: 'Backpack', motion: 'idle' },
+  { emoji: '🌪️', word: 'Tornado', motion: 'idle' },
 ];
 
 const tier4: WordCard[] = [
@@ -71,6 +112,16 @@ const tier4: WordCard[] = [
   { emoji: '🐉', word: 'Dragon', motion: 'fly' },
   { emoji: '🏰', word: 'Castle', motion: 'idle' },
   { emoji: '🏝️', word: 'Island', motion: 'idle' },
+  { emoji: '🌌', word: 'Galaxy', motion: 'idle' },
+  { emoji: '☄️', word: 'Comet', motion: 'fly' },
+  { emoji: '🛰️', word: 'Satellite', motion: 'fly' },
+  { emoji: '🧙', word: 'Wizard', motion: 'idle' },
+  { emoji: '🏴‍☠️', word: 'Pirate', motion: 'idle' },
+  { emoji: '👻', word: 'Ghost', motion: 'fly' },
+  { emoji: '🧜', word: 'Mermaid', motion: 'swim' },
+  { emoji: '💎', word: 'Diamond', motion: 'idle' },
+  { emoji: '🏮', word: 'Lantern', motion: 'idle' },
+  { emoji: '⚓', word: 'Anchor', motion: 'idle' },
 ];
 
 export const englishTiers: WordCard[][] = [tier0, tier1, tier2, tier3, tier4];
@@ -86,4 +137,15 @@ export function generateEnglishQuestion(tier: number): EnglishQuestion {
   const distractors = shuffle(pool.filter((c) => c.word !== card.word)).slice(0, 2);
   const options = shuffle([card.word, ...distractors.map((c) => c.word)]);
   return { card, options };
+}
+
+export function generateEnglishQuestionSet(
+  tier: number,
+  count: number = QUESTIONS_PER_LEVEL
+): EnglishQuestion[] {
+  return generateUniqueSet(
+    () => generateEnglishQuestion(tier),
+    (q) => q.card.word,
+    count
+  );
 }

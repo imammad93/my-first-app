@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo, useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import { SafeAreaView, StyleSheet, Text, View } from 'react-native';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import type { RootStackParamList } from '../../App';
@@ -6,7 +6,7 @@ import OptionButton from '../components/OptionButton';
 import ProgressBar from '../components/ProgressBar';
 import CelebrationOverlay from '../components/CelebrationOverlay';
 import LevelCompleteCard from '../components/LevelCompleteCard';
-import { emojiRow, generateMathQuestion } from '../data/mathData';
+import { emojiRow, generateMathQuestionSet } from '../data/mathData';
 import { mathDifficultyFor } from '../data/difficulty';
 import { useAge } from '../context/AgeContext';
 import { useLevelRound } from '../hooks/useLevelRound';
@@ -22,11 +22,12 @@ export default function MathGameScreen({ route, navigation }: Props) {
 function MathLevelRound({ level, navigation }: { level: number; navigation: Props['navigation'] }) {
   const { age } = useAge();
   const difficulty = useMemo(() => mathDifficultyFor(age, level), [age, level]);
+  const questions = useMemo(() => generateMathQuestionSet(difficulty), [difficulty]);
   const [celebrate, setCelebrate] = useState(false);
 
   const { question, questionNumber, totalQuestions, wrongPicks, solved, completed, stars, select } =
     useLevelRound({
-      generateQuestion: useCallback(() => generateMathQuestion(difficulty), [difficulty]),
+      questions,
       getAnswer: (q) => q.answer,
     });
 

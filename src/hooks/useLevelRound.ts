@@ -2,17 +2,18 @@ import { useCallback, useState } from 'react';
 import { QUESTIONS_PER_LEVEL } from '../data/difficulty';
 
 type Args<Q, A> = {
-  generateQuestion: () => Q;
+  questions: Q[];
   getAnswer: (question: Q) => A;
 };
 
-export function useLevelRound<Q, A>({ generateQuestion, getAnswer }: Args<Q, A>) {
-  const [question, setQuestion] = useState<Q>(() => generateQuestion());
-  const [answeredCount, setAnsweredCount] = useState(0);
+export function useLevelRound<Q, A>({ questions, getAnswer }: Args<Q, A>) {
+  const [index, setIndex] = useState(0);
   const [firstTryCorrect, setFirstTryCorrect] = useState(0);
   const [wrongPicks, setWrongPicks] = useState<A[]>([]);
   const [solved, setSolved] = useState(false);
   const [completed, setCompleted] = useState(false);
+
+  const question = questions[Math.min(index, questions.length - 1)];
 
   const select = useCallback(
     (pick: A, onAdvance: () => void) => {
@@ -23,12 +24,11 @@ export function useLevelRound<Q, A>({ generateQuestion, getAnswer }: Args<Q, A>)
         if (wrongPicks.length === 0) setFirstTryCorrect((c) => c + 1);
 
         setTimeout(() => {
-          const nextAnswered = answeredCount + 1;
-          setAnsweredCount(nextAnswered);
-          if (nextAnswered >= QUESTIONS_PER_LEVEL) {
+          const nextIndex = index + 1;
+          if (nextIndex >= questions.length) {
             setCompleted(true);
           } else {
-            setQuestion(generateQuestion());
+            setIndex(nextIndex);
             setWrongPicks([]);
             setSolved(false);
           }
@@ -38,7 +38,7 @@ export function useLevelRound<Q, A>({ generateQuestion, getAnswer }: Args<Q, A>)
         setWrongPicks((prev) => [...prev, pick]);
       }
     },
-    [solved, completed, question, wrongPicks, answeredCount, getAnswer, generateQuestion]
+    [solved, completed, question, wrongPicks, index, questions.length, getAnswer]
   );
 
   const stars = completed
@@ -51,8 +51,8 @@ export function useLevelRound<Q, A>({ generateQuestion, getAnswer }: Args<Q, A>)
 
   return {
     question,
-    questionNumber: Math.min(answeredCount + 1, QUESTIONS_PER_LEVEL),
-    totalQuestions: QUESTIONS_PER_LEVEL,
+    questionNumber: Math.min(index + 1, questions.length),
+    totalQuestions: questions.length,
     wrongPicks,
     solved,
     completed,

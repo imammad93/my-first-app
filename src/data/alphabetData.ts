@@ -1,5 +1,6 @@
 import { pickOne, shuffle } from '../utils/random';
-import { AlphabetMode } from './difficulty';
+import { generateUniqueSet } from '../utils/uniqueSet';
+import { AlphabetMode, QUESTIONS_PER_LEVEL } from './difficulty';
 import { MotionType } from './motion';
 
 export type LetterItem = {
@@ -63,4 +64,15 @@ export function generateAlphabetQuestion(mode: AlphabetMode): AlphabetQuestion {
 
   const itemOptions = shuffle([target, ...distractors.slice(0, 2)]);
   return { mode, target, itemOptions, letterOptions: [] };
+}
+
+export function generateAlphabetQuestionSet(
+  mode: AlphabetMode,
+  count: number = QUESTIONS_PER_LEVEL
+): AlphabetQuestion[] {
+  return generateUniqueSet(
+    () => generateAlphabetQuestion(mode),
+    (q) => q.target.letter,
+    count
+  );
 }

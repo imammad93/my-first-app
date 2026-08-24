@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo, useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import { SafeAreaView, StyleSheet, Text, View } from 'react-native';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import type { RootStackParamList } from '../../App';
@@ -8,7 +8,7 @@ import CelebrationOverlay from '../components/CelebrationOverlay';
 import LevelCompleteCard from '../components/LevelCompleteCard';
 import AnimatedCreature from '../components/AnimatedCreature';
 import CreatureStage from '../components/CreatureStage';
-import { generateAlphabetQuestion } from '../data/alphabetData';
+import { generateAlphabetQuestionSet } from '../data/alphabetData';
 import { alphabetModeFor } from '../data/difficulty';
 import { useAge } from '../context/AgeContext';
 import { useLevelRound } from '../hooks/useLevelRound';
@@ -24,11 +24,12 @@ export default function AlphabetGameScreen({ route, navigation }: Props) {
 function AlphabetLevelRound({ level, navigation }: { level: number; navigation: Props['navigation'] }) {
   const { age } = useAge();
   const mode = useMemo(() => alphabetModeFor(age, level), [age, level]);
+  const questions = useMemo(() => generateAlphabetQuestionSet(mode), [mode]);
   const [celebrate, setCelebrate] = useState(false);
 
   const { question, questionNumber, totalQuestions, wrongPicks, solved, completed, stars, select } =
     useLevelRound({
-      generateQuestion: useCallback(() => generateAlphabetQuestion(mode), [mode]),
+      questions,
       getAnswer: (q) => q.target.letter,
     });
 
