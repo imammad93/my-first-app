@@ -6,7 +6,8 @@ import OptionButton from '../components/OptionButton';
 import ProgressBar from '../components/ProgressBar';
 import CelebrationOverlay from '../components/CelebrationOverlay';
 import LevelCompleteCard from '../components/LevelCompleteCard';
-import { emojiRow, generateMathQuestionSet } from '../data/mathData';
+import { generateMathQuestionSet } from '../data/mathData';
+import MathBasketGame from '../components/math/MathBasketGame';
 import { mathDifficultyFor } from '../data/difficulty';
 import { useAge } from '../context/AgeContext';
 import { useLevelRound } from '../hooks/useLevelRound';
@@ -44,17 +45,25 @@ function MathLevelRound({ level, navigation }: { level: number; navigation: Prop
     return 'default';
   };
 
-  const showEmojiHint = question.a <= 10 && question.b <= 10;
+  const basketOp = question.op === '+' || question.op === '-' ? question.op : null;
+  const showBaskets = basketOp !== null && question.a <= 12 && question.b <= 12;
 
   return (
     <SafeAreaView style={styles.container}>
       <ProgressBar current={Math.min(questionNumber, totalQuestions)} total={totalQuestions} color={colors.math} />
       <View style={styles.card}>
-        {showEmojiHint && <Text style={styles.emojiRow}>{emojiRow(question.a)}</Text>}
+        {showBaskets && basketOp ? (
+          <MathBasketGame
+            key={`${question.a}-${question.op}-${question.b}`}
+            a={question.a}
+            b={question.b}
+            op={basketOp}
+            solved={solved}
+          />
+        ) : null}
         <Text style={styles.equation}>
           {question.a} {question.op} {question.b} = ?
         </Text>
-        {showEmojiHint && question.op === '-' && <Text style={styles.emojiRow}>{emojiRow(question.b)}</Text>}
       </View>
       <View style={styles.options}>
         {question.options.map((option) => (
@@ -98,11 +107,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginTop: 24,
     marginBottom: 16,
-  },
-  emojiRow: {
-    fontSize: 22,
-    letterSpacing: 2,
-    marginVertical: 4,
   },
   equation: {
     fontSize: 40,
