@@ -1,13 +1,11 @@
 import React, { useMemo, useState } from 'react';
-import { SafeAreaView, StyleSheet, Text, View } from 'react-native';
+import { SafeAreaView, StyleSheet, Text } from 'react-native';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import type { RootStackParamList } from '../../App';
-import OptionButton from '../components/OptionButton';
 import ProgressBar from '../components/ProgressBar';
 import CelebrationOverlay from '../components/CelebrationOverlay';
 import LevelCompleteCard from '../components/LevelCompleteCard';
-import AnimatedCreature from '../components/AnimatedCreature';
-import CreatureStage from '../components/CreatureStage';
+import WordTrainGame from '../components/english/WordTrainGame';
 import { generateEnglishQuestionSet } from '../data/englishData';
 import { englishTierFor } from '../data/difficulty';
 import { useAge } from '../context/AgeContext';
@@ -39,30 +37,21 @@ function EnglishLevelRound({ level, navigation }: { level: number; navigation: P
     });
   };
 
-  const statusFor = (option: string) => {
-    if (solved && option === question.card.word) return 'correct';
-    if (wrongPicks.includes(option)) return 'wrong';
-    return 'default';
-  };
-
   return (
     <SafeAreaView style={styles.container}>
       <ProgressBar current={Math.min(questionNumber, totalQuestions)} total={totalQuestions} color={colors.english} />
-      <Text style={styles.prompt}>Bu nədir?</Text>
-      <CreatureStage>
-        <AnimatedCreature emoji={question.card.emoji} motion={question.card.motion} size={92} />
-      </CreatureStage>
-      <View style={styles.options}>
-        {question.options.map((option) => (
-          <OptionButton
-            key={option}
-            label={option}
-            status={statusFor(option)}
-            disabled={solved}
-            onPress={() => onSelect(option)}
-          />
-        ))}
-      </View>
+      <Text style={styles.prompt}>Bu nədir? Doğru sözün vaqonuna göndər!</Text>
+      <WordTrainGame
+        key={question.card.word}
+        emoji={question.card.emoji}
+        motion={question.card.motion}
+        options={question.options}
+        correctWord={question.card.word}
+        wrongPicks={wrongPicks}
+        solved={solved}
+        disabled={solved}
+        onPick={onSelect}
+      />
       <CelebrationOverlay visible={celebrate} onDone={() => setCelebrate(false)} />
       {completed && (
         <LevelCompleteCard
@@ -91,15 +80,11 @@ const styles = StyleSheet.create({
     paddingTop: 24,
   },
   prompt: {
-    fontSize: 22,
+    fontSize: 18,
     fontFamily: fonts.displayBold,
     color: colors.text,
     marginTop: 12,
-  },
-  options: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    justifyContent: 'center',
-    paddingHorizontal: 12,
+    textAlign: 'center',
+    paddingHorizontal: 24,
   },
 });
