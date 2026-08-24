@@ -54,6 +54,16 @@ export default function HomeScreen({ navigation }: Props) {
             <Text style={styles.tileTitle}>{tile.title}</Text>
           </Pressable>
         ))}
+
+        <Pressable
+          onPress={() => navigation.navigate('WorldMap')}
+          style={({ pressed }) => [styles.tile, { backgroundColor: '#0A6BB5' }, pressed && styles.pressed]}
+        >
+          <View style={styles.tileIconWrap}>
+            <AnimatedCreature emoji="🌍" motion="idle" size={44} />
+          </View>
+          <Text style={styles.tileTitle}>Dünya Xəritəsi</Text>
+        </Pressable>
       </View>
     </SafeAreaView>
   );
