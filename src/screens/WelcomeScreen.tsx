@@ -196,7 +196,7 @@ export default function WelcomeScreen({ navigation }: Props) {
         <Pressable
           onPressIn={() => Animated.spring(startScale, { toValue: 0.94, useNativeDriver: true }).start()}
           onPressOut={() => Animated.spring(startScale, { toValue: 1, friction: 4, useNativeDriver: true }).start()}
-          onPress={() => navigation.replace('Home')}
+          onPress={() => navigation.replace('HomeMenu')}
         >
           <Animated.View style={[styles.startButton, { transform: [{ scale: startScale }] }]}>
             <Text style={styles.startButtonText}>BAŞLA ▶</Text>
