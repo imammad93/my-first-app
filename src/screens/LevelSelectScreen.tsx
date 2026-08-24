@@ -6,7 +6,7 @@ import type { RootStackParamList } from '../../App';
 import { useAge } from '../context/AgeContext';
 import { getUnlockedLevel } from '../data/progress';
 import { LEVELS_PER_AGE } from '../data/difficulty';
-import { colors } from '../theme';
+import { colors, fonts } from '../theme';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'LevelSelect'>;
 
@@ -86,7 +86,7 @@ const styles = StyleSheet.create({
   },
   subtitle: {
     fontSize: 16,
-    fontWeight: '700',
+    fontFamily: fonts.displayBold,
     color: colors.text,
     marginBottom: 8,
   },
@@ -104,7 +104,7 @@ const styles = StyleSheet.create({
   },
   cellLabel: {
     fontSize: 18,
-    fontWeight: '700',
+    fontFamily: fonts.button,
     color: colors.white,
   },
   cellLabelLocked: {

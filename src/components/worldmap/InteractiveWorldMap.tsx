@@ -3,6 +3,7 @@ import { Animated, Easing, Pressable, SafeAreaView, StyleSheet, Text, View } fro
 import Svg, { Circle, Path } from 'react-native-svg';
 import { CONFIG, Country, VB_HEIGHT, VB_WIDTH, VB_X, VB_Y, computeBboxes, flagFromIso2, regionColorMap } from './mapData';
 import { useMapTransform } from './useMapTransform';
+import { fonts } from '../../theme';
 
 export default function InteractiveWorldMap() {
   const { labels, animation, theme } = CONFIG;
@@ -153,25 +154,25 @@ export default function InteractiveWorldMap() {
 const styles = StyleSheet.create({
   screen: { flex: 1, paddingHorizontal: 16, paddingTop: 12 },
   header: { marginBottom: 14 },
-  title: { color: '#FFFFFF', fontSize: 26, fontWeight: '900' },
-  subtitle: { marginTop: 4, color: '#EAFBFF', fontSize: 14, fontWeight: '600' },
+  title: { color: '#FFFFFF', fontSize: 26, fontFamily: fonts.display },
+  subtitle: { marginTop: 4, color: '#EAFBFF', fontSize: 14, fontFamily: fonts.button },
   mapFrame: { width: '100%', aspectRatio: 2, borderRadius: 24, overflow: 'hidden', borderWidth: 3, borderColor: 'rgba(255,255,255,0.4)' },
   glowRing: { position: 'absolute', top: 8, left: 8, right: 8, bottom: 8, borderRadius: 18, borderWidth: 3, borderColor: '#FFE34F' },
   zoomControls: { position: 'absolute', top: 12, right: 12, gap: 8 },
   zoomBtn: { width: 40, height: 40, borderRadius: 20, backgroundColor: 'rgba(255,255,255,0.92)', alignItems: 'center', justifyContent: 'center', elevation: 4 },
-  zoomBtnText: { fontSize: 22, fontWeight: '900', color: '#094B9B' },
+  zoomBtnText: { fontSize: 22, fontFamily: fonts.buttonBold, color: '#094B9B' },
   resetBtn: { position: 'absolute', bottom: 14, alignSelf: 'center', backgroundColor: 'rgba(255,255,255,0.95)', borderRadius: 18, paddingHorizontal: 16, paddingVertical: 10, elevation: 4 },
-  resetBtnText: { fontSize: 14, fontWeight: '800', color: '#094B9B' },
+  resetBtnText: { fontSize: 14, fontFamily: fonts.buttonBold, color: '#094B9B' },
   hintPill: { position: 'absolute', bottom: 14, alignSelf: 'center', backgroundColor: 'rgba(9,75,155,0.85)', borderRadius: 18, paddingHorizontal: 16, paddingVertical: 10 },
-  hintText: { color: '#FFFFFF', fontSize: 13, fontWeight: '700' },
+  hintText: { color: '#FFFFFF', fontSize: 13, fontFamily: fonts.button },
   infoCard: { marginTop: 14, marginBottom: 16, borderRadius: 24, padding: 20, alignItems: 'center', elevation: 8, shadowColor: '#000', shadowOpacity: 0.2, shadowOffset: { width: 0, height: 8 }, shadowRadius: 16 },
-  selectedMessage: { fontSize: 13, fontWeight: '700', marginBottom: 6 },
+  selectedMessage: { fontSize: 13, fontFamily: fonts.buttonBold, marginBottom: 6 },
   countryFlag: { fontSize: 40, marginBottom: 4 },
-  countryName: { fontSize: 26, fontWeight: '900', textAlign: 'center' },
-  countryEnglish: { fontSize: 13, color: '#7D93A8', marginTop: 2 },
+  countryName: { fontSize: 26, fontFamily: fonts.display, textAlign: 'center' },
+  countryEnglish: { fontSize: 13, color: '#7D93A8', marginTop: 2, fontFamily: fonts.button },
   divider: { width: '60%', height: 1, backgroundColor: 'rgba(9,75,155,0.15)', marginVertical: 14 },
-  capitalLabel: { fontSize: 12, fontWeight: '700', color: '#7D93A8' },
-  capitalName: { fontSize: 24, fontWeight: '900', marginTop: 2 },
+  capitalLabel: { fontSize: 12, fontFamily: fonts.buttonBold, color: '#7D93A8' },
+  capitalName: { fontSize: 24, fontFamily: fonts.display, marginTop: 2 },
   closeButton: { marginTop: 16, minWidth: 140, minHeight: 44, borderRadius: 14, backgroundColor: '#094B9B', alignItems: 'center', justifyContent: 'center' },
-  closeButtonText: { color: '#FFFFFF', fontSize: 14, fontWeight: '800' },
+  closeButtonText: { color: '#FFFFFF', fontSize: 14, fontFamily: fonts.buttonBold },
 });

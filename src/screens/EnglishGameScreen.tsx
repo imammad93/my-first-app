@@ -13,7 +13,7 @@ import { englishTierFor } from '../data/difficulty';
 import { useAge } from '../context/AgeContext';
 import { useLevelRound } from '../hooks/useLevelRound';
 import { unlockNextLevel } from '../data/progress';
-import { colors } from '../theme';
+import { colors, fonts } from '../theme';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'English'>;
 
@@ -92,7 +92,7 @@ const styles = StyleSheet.create({
   },
   prompt: {
     fontSize: 22,
-    fontWeight: '700',
+    fontFamily: fonts.displayBold,
     color: colors.text,
     marginTop: 12,
   },

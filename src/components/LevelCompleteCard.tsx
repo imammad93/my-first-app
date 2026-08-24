@@ -1,6 +1,6 @@
-import React from 'react';
-import { Pressable, StyleSheet, Text, View } from 'react-native';
-import { colors } from '../theme';
+import React, { useEffect, useRef } from 'react';
+import { Animated, Easing, Pressable, StyleSheet, Text, View } from 'react-native';
+import { colors, fonts } from '../theme';
 import { LEVELS_PER_AGE } from '../data/difficulty';
 
 type Props = {
@@ -13,10 +13,19 @@ type Props = {
 
 export default function LevelCompleteCard({ level, stars, color, onNextLevel, onBackToLevels }: Props) {
   const hasNextLevel = level < LEVELS_PER_AGE;
+  const cardScale = useRef(new Animated.Value(0.6)).current;
+  const cardOpacity = useRef(new Animated.Value(0)).current;
+
+  useEffect(() => {
+    Animated.parallel([
+      Animated.spring(cardScale, { toValue: 1, friction: 6, tension: 80, useNativeDriver: true }),
+      Animated.timing(cardOpacity, { toValue: 1, duration: 200, useNativeDriver: true }),
+    ]).start();
+  }, [cardScale, cardOpacity]);
 
   return (
     <View style={styles.overlay}>
-      <View style={styles.card}>
+      <Animated.View style={[styles.card, { opacity: cardOpacity, transform: [{ scale: cardScale }] }]}>
         <Text style={styles.title}>Səviyyə {level} tamamlandı!</Text>
         <Text style={styles.stars}>{'⭐'.repeat(stars)}{'☆'.repeat(3 - stars)}</Text>
         {hasNextLevel ? (
@@ -29,7 +38,7 @@ export default function LevelCompleteCard({ level, stars, color, onNextLevel, on
         <Pressable style={styles.secondaryButton} onPress={onBackToLevels}>
           <Text style={styles.secondaryLabel}>Səviyyələrə qayıt</Text>
         </Pressable>
-      </View>
+      </Animated.View>
     </View>
   );
 }
@@ -48,14 +57,19 @@ const styles = StyleSheet.create({
   card: {
     width: '82%',
     backgroundColor: colors.white,
-    borderRadius: 24,
+    borderRadius: 28,
     paddingVertical: 32,
     paddingHorizontal: 24,
     alignItems: 'center',
+    elevation: 10,
+    shadowColor: '#000',
+    shadowOpacity: 0.25,
+    shadowRadius: 20,
+    shadowOffset: { width: 0, height: 10 },
   },
   title: {
     fontSize: 22,
-    fontWeight: '800',
+    fontFamily: fonts.display,
     color: colors.text,
     marginBottom: 12,
     textAlign: 'center',
@@ -66,21 +80,23 @@ const styles = StyleSheet.create({
   },
   doneText: {
     fontSize: 16,
-    fontWeight: '600',
+    fontFamily: fonts.buttonBold,
     color: colors.text,
     marginBottom: 16,
     textAlign: 'center',
   },
   button: {
-    borderRadius: 16,
+    borderRadius: 18,
     paddingVertical: 14,
     paddingHorizontal: 28,
     marginBottom: 12,
+    borderBottomWidth: 4,
+    borderBottomColor: 'rgba(0,0,0,0.15)',
   },
   buttonLabel: {
     color: colors.white,
-    fontSize: 18,
-    fontWeight: '700',
+    fontSize: 17,
+    fontFamily: fonts.button,
   },
   secondaryButton: {
     paddingVertical: 8,
@@ -88,7 +104,7 @@ const styles = StyleSheet.create({
   secondaryLabel: {
     color: colors.text,
     fontSize: 15,
-    fontWeight: '600',
+    fontFamily: fonts.buttonBold,
     textDecorationLine: 'underline',
   },
 });

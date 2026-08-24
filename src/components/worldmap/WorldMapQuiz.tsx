@@ -13,6 +13,7 @@ import {
   regionColorMap,
 } from './mapData';
 import { useMapTransform } from './useMapTransform';
+import { fonts } from '../../theme';
 
 const QUESTIONS_PER_ROUND = 10;
 
@@ -201,18 +202,18 @@ const styles = StyleSheet.create({
   screen: { flex: 1, paddingHorizontal: 16, paddingTop: 12 },
   header: { marginBottom: 12 },
   headerRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
-  title: { color: '#FFFFFF', fontSize: 24, fontWeight: '900' },
+  title: { color: '#FFFFFF', fontSize: 24, fontFamily: fonts.display },
   scoreBadge: { backgroundColor: 'rgba(255,255,255,0.92)', borderRadius: 999, paddingHorizontal: 12, paddingVertical: 6 },
-  scoreText: { fontWeight: '800', color: '#094B9B', fontSize: 14 },
-  progress: { marginTop: 4, color: '#EAFBFF', fontSize: 12, fontWeight: '700' },
-  prompt: { marginTop: 6, color: '#FFFFFF', fontSize: 17, fontWeight: '800' },
+  scoreText: { fontFamily: fonts.buttonBold, color: '#094B9B', fontSize: 14 },
+  progress: { marginTop: 4, color: '#EAFBFF', fontSize: 12, fontFamily: fonts.button },
+  prompt: { marginTop: 6, color: '#FFFFFF', fontSize: 17, fontFamily: fonts.buttonBold },
   mapFrame: { width: '100%', aspectRatio: 2, borderRadius: 24, overflow: 'hidden', borderWidth: 3, borderColor: 'rgba(255,255,255,0.4)' },
   infoCard: { marginTop: 14, marginBottom: 16, borderRadius: 24, padding: 20, alignItems: 'center', elevation: 8, shadowColor: '#000', shadowOpacity: 0.2, shadowOffset: { width: 0, height: 8 }, shadowRadius: 16 },
-  selectedMessage: { fontSize: 15, fontWeight: '800', marginBottom: 6 },
+  selectedMessage: { fontSize: 15, fontFamily: fonts.buttonBold, marginBottom: 6 },
   countryFlag: { fontSize: 36, marginBottom: 4 },
-  countryName: { fontSize: 22, fontWeight: '900', textAlign: 'center' },
-  capitalLabel: { marginTop: 8, fontSize: 12, fontWeight: '700', color: '#7D93A8' },
-  capitalName: { fontSize: 20, fontWeight: '900', marginTop: 2 },
+  countryName: { fontSize: 22, fontFamily: fonts.display, textAlign: 'center' },
+  capitalLabel: { marginTop: 8, fontSize: 12, fontFamily: fonts.buttonBold, color: '#7D93A8' },
+  capitalName: { fontSize: 20, fontFamily: fonts.display, marginTop: 2 },
   closeButton: { marginTop: 16, minWidth: 160, minHeight: 46, borderRadius: 14, backgroundColor: '#094B9B', alignItems: 'center', justifyContent: 'center' },
-  closeButtonText: { color: '#FFFFFF', fontSize: 14, fontWeight: '800' },
+  closeButtonText: { color: '#FFFFFF', fontSize: 14, fontFamily: fonts.buttonBold },
 });

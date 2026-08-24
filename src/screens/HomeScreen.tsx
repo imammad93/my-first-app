@@ -5,7 +5,7 @@ import type { RootStackParamList } from '../../App';
 import { useAge } from '../context/AgeContext';
 import { MAX_AGE, MIN_AGE } from '../data/difficulty';
 import AnimatedCreature from '../components/AnimatedCreature';
-import { colors } from '../theme';
+import { colors, fonts } from '../theme';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'Home'>;
 
@@ -78,13 +78,13 @@ const styles = StyleSheet.create({
   },
   title: {
     fontSize: 30,
-    fontWeight: '800',
+    fontFamily: fonts.display,
     color: colors.text,
     marginBottom: 16,
   },
   ageLabel: {
     fontSize: 14,
-    fontWeight: '700',
+    fontFamily: fonts.buttonBold,
     color: colors.text,
     marginBottom: 8,
   },
@@ -110,7 +110,7 @@ const styles = StyleSheet.create({
   },
   ageChipLabel: {
     fontSize: 16,
-    fontWeight: '700',
+    fontFamily: fonts.buttonBold,
     color: colors.text,
   },
   ageChipLabelSelected: {
@@ -139,7 +139,7 @@ const styles = StyleSheet.create({
   },
   tileTitle: {
     fontSize: 24,
-    fontWeight: '700',
+    fontFamily: fonts.display,
     color: colors.white,
   },
 });

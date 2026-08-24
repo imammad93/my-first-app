@@ -11,7 +11,7 @@ import { mathDifficultyFor } from '../data/difficulty';
 import { useAge } from '../context/AgeContext';
 import { useLevelRound } from '../hooks/useLevelRound';
 import { unlockNextLevel } from '../data/progress';
-import { colors } from '../theme';
+import { colors, fonts } from '../theme';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'Math'>;
 
@@ -106,7 +106,7 @@ const styles = StyleSheet.create({
   },
   equation: {
     fontSize: 40,
-    fontWeight: '800',
+    fontFamily: fonts.display,
     color: colors.math,
     marginVertical: 8,
   },
