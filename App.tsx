@@ -6,6 +6,7 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import * as SplashScreen from 'expo-splash-screen';
 import { useFonts, Fredoka_600SemiBold, Fredoka_700Bold } from '@expo-google-fonts/fredoka';
 import { Baloo2_700Bold, Baloo2_800ExtraBold } from '@expo-google-fonts/baloo-2';
+import WelcomeScreen from './src/screens/WelcomeScreen';
 import HomeScreen from './src/screens/HomeScreen';
 import LevelSelectScreen from './src/screens/LevelSelectScreen';
 import MathGameScreen from './src/screens/MathGameScreen';
@@ -17,6 +18,7 @@ import { colors, fonts } from './src/theme';
 import type { GameId } from './src/data/progress';
 
 export type RootStackParamList = {
+  Welcome: undefined;
   Home: undefined;
   LevelSelect: { game: GameId };
   Math: { level: number };
@@ -49,13 +51,14 @@ export default function App() {
         <NavigationContainer>
           <StatusBar style="auto" />
           <Stack.Navigator
-            initialRouteName="Home"
+            initialRouteName="Welcome"
             screenOptions={{
               headerStyle: { backgroundColor: colors.home },
               headerTintColor: colors.white,
               headerTitleStyle: { fontFamily: fonts.displayBold, fontSize: 19 },
             }}
           >
+            <Stack.Screen name="Welcome" component={WelcomeScreen} options={{ headerShown: false }} />
             <Stack.Screen name="Home" component={HomeScreen} options={{ title: 'Öyrən və Oyna' }} />
             <Stack.Screen
               name="LevelSelect"
