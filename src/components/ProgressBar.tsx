@@ -11,7 +11,7 @@ type Props = {
 export default function ProgressBar({ current, total, color }: Props) {
   const ratio = Math.min(1, current / total);
   return (
-    <View style={styles.wrapper}>
+    <View style={styles.card}>
       <Text style={styles.label}>
         Sual {current}/{total}
       </Text>
@@ -23,9 +23,18 @@ export default function ProgressBar({ current, total, color }: Props) {
 }
 
 const styles = StyleSheet.create({
-  wrapper: {
+  card: {
     width: '86%',
     marginTop: 8,
+    backgroundColor: 'rgba(255,255,255,0.92)',
+    borderRadius: 16,
+    paddingHorizontal: 14,
+    paddingVertical: 8,
+    shadowColor: '#000',
+    shadowOpacity: 0.12,
+    shadowRadius: 6,
+    shadowOffset: { width: 0, height: 3 },
+    elevation: 3,
   },
   label: {
     fontSize: 13,

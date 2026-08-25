@@ -4,6 +4,7 @@ import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import type { RootStackParamList } from '../../App';
 import LeafOption from '../components/alphabet/LeafOption';
 import ProgressBar from '../components/ProgressBar';
+import SceneBackground from '../components/SceneBackground';
 import CelebrationOverlay from '../components/CelebrationOverlay';
 import LevelCompleteCard from '../components/LevelCompleteCard';
 import AnimatedCreature from '../components/AnimatedCreature';
@@ -50,6 +51,7 @@ function AlphabetLevelRound({ level, navigation }: { level: number; navigation: 
 
   return (
     <SafeAreaView style={styles.container}>
+      <SceneBackground subject="alphabet" />
       <ProgressBar
         current={Math.min(questionNumber, totalQuestions)}
         total={totalQuestions}
@@ -58,7 +60,9 @@ function AlphabetLevelRound({ level, navigation }: { level: number; navigation: 
 
       {question.mode === 'pick-letter' ? (
         <>
-          <Text style={styles.prompt}>Bu hansı hərflə başlayır?</Text>
+          <View style={styles.promptCard}>
+            <Text style={styles.prompt}>Bu hansı hərflə başlayır?</Text>
+          </View>
           <CreatureStage>
             <AnimatedCreature emoji={question.target.emoji} motion={question.target.motion} size={92} />
           </CreatureStage>
@@ -77,8 +81,10 @@ function AlphabetLevelRound({ level, navigation }: { level: number; navigation: 
         </>
       ) : (
         <>
-          <Text style={styles.prompt}>Bu hərflə başlayanı tap:</Text>
-          <Text style={styles.letter}>{displayLetter}</Text>
+          <View style={styles.promptCard}>
+            <Text style={styles.prompt}>Bu hərflə başlayanı tap:</Text>
+            <Text style={styles.letter}>{displayLetter}</Text>
+          </View>
           <View style={styles.options}>
             {question.itemOptions.map((item, i) => (
               <LeafOption
@@ -123,11 +129,24 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingTop: 24,
   },
+  promptCard: {
+    marginTop: 12,
+    marginHorizontal: 20,
+    alignItems: 'center',
+    backgroundColor: 'rgba(255,255,255,0.92)',
+    borderRadius: 22,
+    paddingHorizontal: 20,
+    paddingVertical: 10,
+    shadowColor: '#000',
+    shadowOpacity: 0.14,
+    shadowRadius: 8,
+    shadowOffset: { width: 0, height: 4 },
+    elevation: 4,
+  },
   prompt: {
     fontSize: 22,
     fontFamily: fonts.displayBold,
     color: colors.text,
-    marginTop: 12,
     textAlign: 'center',
     paddingHorizontal: 24,
   },
@@ -135,7 +154,7 @@ const styles = StyleSheet.create({
     fontSize: 96,
     fontFamily: fonts.display,
     color: colors.alphabet,
-    marginVertical: 16,
+    marginTop: 4,
   },
   options: {
     flexDirection: 'row',

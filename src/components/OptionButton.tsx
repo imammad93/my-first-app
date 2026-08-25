@@ -1,5 +1,6 @@
 import React from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
+import { LinearGradient } from 'expo-linear-gradient';
 import { colors, fonts } from '../theme';
 import ScorePopup from './ScorePopup';
 
@@ -13,10 +14,10 @@ type Props = {
   icon?: React.ReactNode;
 };
 
-const statusColor: Record<Status, string> = {
-  default: colors.optionDefault,
-  correct: colors.correct,
-  wrong: colors.wrong,
+const statusGradient: Record<Status, readonly [string, string]> = {
+  default: ['#FFFFFF', '#EDEAF6'],
+  correct: ['#6FCF87', '#3FA663'],
+  wrong: ['#F5928A', '#DE5A50'],
 };
 
 export default function OptionButton({ label, status, disabled, onPress, icon }: Props) {
@@ -28,47 +29,60 @@ export default function OptionButton({ label, status, disabled, onPress, icon }:
       disabled={disabled}
       accessibilityRole="button"
       accessibilityLabel={label}
-      style={({ pressed }) => [
-        styles.button,
-        { backgroundColor: statusColor[status] },
-        pressed && styles.pressed,
-      ]}
+      style={({ pressed }) => [styles.shadowWrap, pressed && styles.pressed]}
     >
-      {status === 'correct' && <ScorePopup />}
-      {icon && <View style={styles.iconWrap}>{icon}</View>}
-      <Text
-        style={[
-          styles.label,
-          useSmallFont && styles.labelSmall,
-          status !== 'default' && styles.labelOnColor,
-        ]}
-      >
-        {label}
-      </Text>
+      <LinearGradient colors={statusGradient[status]} start={{ x: 0.5, y: 0 }} end={{ x: 0.5, y: 1 }} style={styles.button}>
+        <View style={styles.sheen} />
+        {status === 'correct' && <ScorePopup />}
+        {icon && <View style={styles.iconWrap}>{icon}</View>}
+        <Text
+          style={[
+            styles.label,
+            useSmallFont && styles.labelSmall,
+            status !== 'default' && styles.labelOnColor,
+          ]}
+        >
+          {label}
+        </Text>
+      </LinearGradient>
     </Pressable>
   );
 }
 
 const styles = StyleSheet.create({
+  shadowWrap: {
+    margin: 10,
+    borderRadius: 26,
+    shadowColor: '#000',
+    shadowOpacity: 0.2,
+    shadowRadius: 10,
+    shadowOffset: { width: 0, height: 6 },
+    elevation: 6,
+  },
+  pressed: {
+    transform: [{ scale: 0.96 }, { translateY: 2 }],
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+  },
   button: {
     minWidth: 120,
     minHeight: 90,
     borderRadius: 26,
     alignItems: 'center',
     justifyContent: 'center',
-    margin: 10,
     paddingHorizontal: 16,
-    borderBottomWidth: 5,
-    borderBottomColor: 'rgba(0,0,0,0.14)',
-    shadowColor: '#000',
-    shadowOpacity: 0.18,
-    shadowRadius: 8,
-    shadowOffset: { width: 0, height: 4 },
-    elevation: 5,
+    borderBottomWidth: 4,
+    borderBottomColor: 'rgba(0,0,0,0.16)',
+    overflow: 'hidden',
   },
-  pressed: {
-    transform: [{ scale: 0.96 }, { translateY: 1 }],
-    borderBottomWidth: 2,
+  sheen: {
+    position: 'absolute',
+    top: 4,
+    left: '12%',
+    right: '12%',
+    height: '42%',
+    borderRadius: 999,
+    backgroundColor: 'rgba(255,255,255,0.4)',
   },
   iconWrap: {
     marginBottom: 4,

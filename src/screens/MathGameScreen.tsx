@@ -4,6 +4,7 @@ import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import type { RootStackParamList } from '../../App';
 import OptionButton from '../components/OptionButton';
 import ProgressBar from '../components/ProgressBar';
+import SceneBackground from '../components/SceneBackground';
 import CelebrationOverlay from '../components/CelebrationOverlay';
 import LevelCompleteCard from '../components/LevelCompleteCard';
 import { generateMathQuestionSet } from '../data/mathData';
@@ -50,6 +51,7 @@ function MathLevelRound({ level, navigation }: { level: number; navigation: Prop
 
   return (
     <SafeAreaView style={styles.container}>
+      <SceneBackground subject="math" />
       <ProgressBar current={Math.min(questionNumber, totalQuestions)} total={totalQuestions} color={colors.math} />
       <View style={styles.card}>
         {showBaskets && basketOp ? (
@@ -107,6 +109,15 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginTop: 24,
     marginBottom: 16,
+    backgroundColor: 'rgba(255,255,255,0.92)',
+    borderRadius: 28,
+    paddingHorizontal: 20,
+    paddingVertical: 16,
+    shadowColor: '#000',
+    shadowOpacity: 0.14,
+    shadowRadius: 10,
+    shadowOffset: { width: 0, height: 5 },
+    elevation: 4,
   },
   equation: {
     fontSize: 40,

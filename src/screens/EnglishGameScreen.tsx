@@ -1,8 +1,9 @@
 import React, { useMemo, useState } from 'react';
-import { SafeAreaView, StyleSheet, Text } from 'react-native';
+import { SafeAreaView, StyleSheet, Text, View } from 'react-native';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import type { RootStackParamList } from '../../App';
 import ProgressBar from '../components/ProgressBar';
+import SceneBackground from '../components/SceneBackground';
 import CelebrationOverlay from '../components/CelebrationOverlay';
 import LevelCompleteCard from '../components/LevelCompleteCard';
 import WordTrainGame from '../components/english/WordTrainGame';
@@ -39,8 +40,11 @@ function EnglishLevelRound({ level, navigation }: { level: number; navigation: P
 
   return (
     <SafeAreaView style={styles.container}>
+      <SceneBackground subject="english" />
       <ProgressBar current={Math.min(questionNumber, totalQuestions)} total={totalQuestions} color={colors.english} />
-      <Text style={styles.prompt}>Bu nədir? Doğru sözün vaqonuna göndər!</Text>
+      <View style={styles.promptCard}>
+        <Text style={styles.prompt}>Bu nədir? Doğru sözün vaqonuna göndər!</Text>
+      </View>
       <WordTrainGame
         key={question.card.word}
         emoji={question.card.emoji}
@@ -79,12 +83,23 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingTop: 24,
   },
+  promptCard: {
+    marginTop: 12,
+    marginHorizontal: 20,
+    backgroundColor: 'rgba(255,255,255,0.92)',
+    borderRadius: 18,
+    paddingHorizontal: 18,
+    paddingVertical: 10,
+    shadowColor: '#000',
+    shadowOpacity: 0.12,
+    shadowRadius: 6,
+    shadowOffset: { width: 0, height: 3 },
+    elevation: 3,
+  },
   prompt: {
     fontSize: 18,
     fontFamily: fonts.displayBold,
     color: colors.text,
-    marginTop: 12,
     textAlign: 'center',
-    paddingHorizontal: 24,
   },
 });

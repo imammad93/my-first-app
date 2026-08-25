@@ -11,6 +11,17 @@ export const colors = {
   optionDefault: '#FFFFFF',
 };
 
+/** Deep-to-light gradient pairs per subject, used for scene backgrounds and glossy buttons. */
+export const gradients = {
+  math: ['#3D9463', '#63C98B'] as const,
+  english: ['#6E5DDB', '#A594FF'] as const,
+  alphabet: ['#E8A616', '#FFD666'] as const,
+  home: ['#6D4FDB', '#A78BFA'] as const,
+};
+
+/** A soft top-light overlay to give any solid-colored surface a glossy, 3D-ish sheen. */
+export const glossOverlay = 'rgba(255,255,255,0.35)';
+
 export const fonts = {
   /** Baloo2 ExtraBold — big titles, hero numbers */
   display: 'Baloo2_800ExtraBold',
