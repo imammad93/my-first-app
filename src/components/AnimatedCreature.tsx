@@ -3,6 +3,7 @@ import { Animated, Easing, StyleSheet, Text } from 'react-native';
 import { Image } from 'expo-image';
 import { MotionType } from '../data/motion';
 import { ANIMAL_ASSETS } from '../data/animalAssets';
+import { DogAnimation } from './DogAnimation';
 
 type Props = {
   emoji: string;
@@ -10,7 +11,13 @@ type Props = {
   size?: number;
 };
 
+const DOG_EMOJI = '🐶';
+
 export default function AnimatedCreature({ emoji, motion, size = 96 }: Props) {
+  if (emoji === DOG_EMOJI) {
+    return <DogAnimation width={size * 1.8} square />;
+  }
+
   const realAsset = ANIMAL_ASSETS[emoji];
   if (realAsset) {
     return <Image source={realAsset} style={{ width: size * 1.8, height: size * 1.8 }} contentFit="contain" />;
