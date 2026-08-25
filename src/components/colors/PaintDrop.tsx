@@ -41,7 +41,7 @@ export default function PaintDrop({ name, hex, wrong, disabled, onPress }: Props
 
   return (
     <Pressable disabled={disabled} onPress={onPress} style={styles.wrap} accessibilityRole="button" accessibilityLabel={name}>
-      <Animated.View style={{ transform: [{ translateY }, { translateX: shakeX }] }}>
+      <Animated.View style={[styles.dropShadow, { transform: [{ translateY }, { translateX: shakeX }] }]}>
         <Svg width={70} height={80} viewBox="0 0 70 80">
           <Path
             d="M35 4 C50 26 62 42 62 54 C62 69 50 78 35 78 C20 78 8 69 8 54 C8 42 20 26 35 4 Z"
@@ -52,6 +52,7 @@ export default function PaintDrop({ name, hex, wrong, disabled, onPress }: Props
           <Path d="M22 40 C22 34 27 30 32 30" stroke="#FFFFFF" strokeWidth={3} strokeLinecap="round" opacity={0.55} fill="none" />
         </Svg>
       </Animated.View>
+      <View style={styles.puddle} />
       <Text style={styles.label}>{name}</Text>
     </Pressable>
   );
@@ -62,6 +63,20 @@ const styles = StyleSheet.create({
     width: 92,
     margin: 6,
     alignItems: 'center',
+  },
+  dropShadow: {
+    shadowColor: '#000',
+    shadowOpacity: 0.3,
+    shadowRadius: 8,
+    shadowOffset: { width: 0, height: 6 },
+    elevation: 6,
+  },
+  puddle: {
+    width: 46,
+    height: 12,
+    marginTop: -6,
+    borderRadius: 999,
+    backgroundColor: 'rgba(0,0,0,0.12)',
   },
   label: {
     marginTop: 4,

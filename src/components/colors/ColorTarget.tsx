@@ -1,5 +1,5 @@
 import React, { useEffect, useRef } from 'react';
-import { Animated, Easing, StyleSheet, View } from 'react-native';
+import { Animated, Easing } from 'react-native';
 import Svg, { Circle } from 'react-native-svg';
 
 const AnimatedCircle = Animated.createAnimatedComponent(Circle);
@@ -30,7 +30,16 @@ export default function ColorTarget({ hex, splash }: Props) {
   const fillOpacity = fill.interpolate({ inputRange: [0, 1], outputRange: [0, 1] });
 
   return (
-    <Animated.View style={{ transform: [{ scale }] }}>
+    <Animated.View
+      style={{
+        transform: [{ scale }],
+        shadowColor: '#000',
+        shadowOpacity: 0.22,
+        shadowRadius: 10,
+        shadowOffset: { width: 0, height: 6 },
+        elevation: 7,
+      }}
+    >
       <Svg width={96} height={96} viewBox="0 0 96 96">
         <Circle cx={48} cy={48} r={40} fill="#FFFFFF" stroke="#D8CFE8" strokeWidth={3} />
         <AnimatedCircle cx={48} cy={48} r={40} fill={hex ?? '#FFFFFF'} opacity={fillOpacity} />

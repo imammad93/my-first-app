@@ -1,5 +1,6 @@
 import React, { useEffect, useRef } from 'react';
 import { Animated, Easing, Pressable, StyleSheet, Text, View } from 'react-native';
+import { LinearGradient } from 'expo-linear-gradient';
 import Basket from '../math/Basket';
 import { colors, fonts } from '../../theme';
 
@@ -14,10 +15,10 @@ type Props = {
   onPress: () => void;
 };
 
-const cardColor: Record<Status, string> = {
-  default: colors.optionDefault,
-  correct: colors.correct,
-  wrong: colors.wrong,
+const cardGradient: Record<Status, readonly [string, string]> = {
+  default: ['#FFFFFF', '#EDEAF6'],
+  correct: ['#6FCF87', '#3FA663'],
+  wrong: ['#F5928A', '#DE5A50'],
 };
 
 export default function CompareBasketOption({ count, emoji, status, disabled, side, onPress }: Props) {
@@ -41,43 +42,60 @@ export default function CompareBasketOption({ count, emoji, status, disabled, si
       onPress={onPress}
       accessibilityRole="button"
       accessibilityLabel={`${side === 'left' ? 'Sol' : 'Sağ'} səbət, ${count}`}
-      style={({ pressed }) => [styles.card, { backgroundColor: cardColor[status] }, pressed && styles.pressed]}
+      style={({ pressed }) => [styles.shadowWrap, pressed && styles.pressed]}
     >
-      <Animated.View style={{ transform: [{ translateX: shakeX }] }}>
-        <View style={styles.fruitZone}>
-          <View style={styles.grid}>
-            {Array.from({ length: count }, (_, i) => (
-              <Text key={i} style={styles.fruit}>
-                {emoji}
-              </Text>
-            ))}
+      <LinearGradient colors={cardGradient[status]} start={{ x: 0.5, y: 0 }} end={{ x: 0.5, y: 1 }} style={styles.card}>
+        <View style={styles.sheen} />
+        <Animated.View style={{ transform: [{ translateX: shakeX }] }}>
+          <View style={styles.fruitZone}>
+            <View style={styles.grid}>
+              {Array.from({ length: count }, (_, i) => (
+                <Text key={i} style={styles.fruit}>
+                  {emoji}
+                </Text>
+              ))}
+            </View>
           </View>
-        </View>
-        <Basket width={110} height={82} />
-        <Text style={[styles.count, status !== 'default' && styles.countOnColor]}>{count}</Text>
-      </Animated.View>
+          <Basket width={110} height={82} />
+          <Text style={[styles.count, status !== 'default' && styles.countOnColor]}>{count}</Text>
+        </Animated.View>
+      </LinearGradient>
     </Pressable>
   );
 }
 
 const styles = StyleSheet.create({
+  shadowWrap: {
+    margin: 10,
+    borderRadius: 24,
+    shadowColor: '#000',
+    shadowOpacity: 0.28,
+    shadowRadius: 14,
+    shadowOffset: { width: 0, height: 9 },
+    elevation: 8,
+  },
   card: {
     borderRadius: 24,
     paddingVertical: 14,
     paddingHorizontal: 10,
-    margin: 10,
     alignItems: 'center',
     minWidth: 140,
     borderBottomWidth: 5,
-    borderBottomColor: 'rgba(0,0,0,0.14)',
-    shadowColor: '#000',
-    shadowOpacity: 0.18,
-    shadowRadius: 8,
-    shadowOffset: { width: 0, height: 4 },
-    elevation: 5,
+    borderBottomColor: 'rgba(0,0,0,0.16)',
+    overflow: 'hidden',
+  },
+  sheen: {
+    position: 'absolute',
+    top: 4,
+    left: '10%',
+    right: '10%',
+    height: '30%',
+    borderRadius: 999,
+    backgroundColor: 'rgba(255,255,255,0.4)',
   },
   pressed: {
     transform: [{ scale: 0.97 }],
+    shadowOpacity: 0.14,
   },
   fruitZone: {
     minHeight: 44,

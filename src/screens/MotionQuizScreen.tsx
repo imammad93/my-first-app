@@ -4,6 +4,7 @@ import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import type { RootStackParamList } from '../../App';
 import OptionButton from '../components/OptionButton';
 import ProgressBar from '../components/ProgressBar';
+import SceneBackground from '../components/SceneBackground';
 import CelebrationOverlay from '../components/CelebrationOverlay';
 import MiniCompleteCard from '../components/MiniCompleteCard';
 import AnimatedCreature from '../components/AnimatedCreature';
@@ -42,8 +43,11 @@ function Round({ navigation }: { navigation: Props['navigation'] }) {
 
   return (
     <SafeAreaView style={styles.container}>
+      <SceneBackground subject="motion" />
       <ProgressBar current={Math.min(questionNumber, totalQuestions)} total={totalQuestions} color={COLOR} />
-      <Text style={styles.prompt}>Hansı heyvan {MOTION_LABELS[question.motion]}?</Text>
+      <View style={styles.promptCard}>
+        <Text style={styles.prompt}>Hansı heyvan {MOTION_LABELS[question.motion]}?</Text>
+      </View>
       <View style={styles.options}>
         {question.options.map((card) => (
           <OptionButton
@@ -78,14 +82,25 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingTop: 24,
   },
+  promptCard: {
+    marginTop: 12,
+    marginBottom: 8,
+    marginHorizontal: 20,
+    backgroundColor: 'rgba(255,255,255,0.92)',
+    borderRadius: 18,
+    paddingHorizontal: 18,
+    paddingVertical: 10,
+    shadowColor: '#000',
+    shadowOpacity: 0.12,
+    shadowRadius: 6,
+    shadowOffset: { width: 0, height: 3 },
+    elevation: 3,
+  },
   prompt: {
     fontSize: 20,
     fontFamily: fonts.displayBold,
     color: colors.text,
-    marginTop: 12,
-    marginBottom: 8,
     textAlign: 'center',
-    paddingHorizontal: 24,
   },
   options: {
     flexDirection: 'row',

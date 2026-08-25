@@ -17,6 +17,10 @@ export const gradients = {
   english: ['#6E5DDB', '#A594FF'] as const,
   alphabet: ['#E8A616', '#FFD666'] as const,
   home: ['#6D4FDB', '#A78BFA'] as const,
+  motion: ['#3E86C2', '#8AD1F5'] as const,
+  compare: ['#C2447E', '#F2A8CB'] as const,
+  colorsGame: ['#D9720F', '#FFC26B'] as const,
+  clock: ['#2E6FAE', '#79C1F2'] as const,
 };
 
 /** A soft top-light overlay to give any solid-colored surface a glossy, 3D-ish sheen. */

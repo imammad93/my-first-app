@@ -71,6 +71,11 @@ export default function LeafOption({ label, icon, status, disabled, index, useSm
             { scale: flyScale },
           ],
           opacity: flyOpacity,
+          shadowColor: '#000',
+          shadowOpacity: 0.26,
+          shadowRadius: 8,
+          shadowOffset: { width: 0, height: 6 },
+          elevation: 6,
         }}
       >
         <Svg width={92} height={104} viewBox="0 0 92 104">

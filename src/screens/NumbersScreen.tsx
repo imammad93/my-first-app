@@ -4,6 +4,7 @@ import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import type { RootStackParamList } from '../../App';
 import OptionButton from '../components/OptionButton';
 import ProgressBar from '../components/ProgressBar';
+import SceneBackground from '../components/SceneBackground';
 import CelebrationOverlay from '../components/CelebrationOverlay';
 import MiniCompleteCard from '../components/MiniCompleteCard';
 import AnimatedCreature from '../components/AnimatedCreature';
@@ -38,14 +39,19 @@ export default function NumbersScreen({ navigation }: Props) {
 
   return (
     <SafeAreaView style={styles.container}>
+      <SceneBackground subject="math" />
       <ProgressBar current={Math.min(questionNumber, totalQuestions)} total={totalQuestions} color={COLOR} />
-      <Text style={styles.prompt}>Neçə dənədir?</Text>
-      <View style={styles.grid}>
-        {Array.from({ length: question.count }, (_, i) => (
-          <View key={i} style={styles.item}>
-            <AnimatedCreature emoji={question.emoji} motion="idle" size={40} />
-          </View>
-        ))}
+      <View style={styles.promptCard}>
+        <Text style={styles.prompt}>Neçə dənədir?</Text>
+      </View>
+      <View style={styles.gridCard}>
+        <View style={styles.grid}>
+          {Array.from({ length: question.count }, (_, i) => (
+            <View key={i} style={styles.item}>
+              <AnimatedCreature emoji={question.emoji} motion="idle" size={40} />
+            </View>
+          ))}
+        </View>
       </View>
       <View style={styles.options}>
         {question.options.map((n) => (
@@ -74,18 +80,39 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingTop: 24,
   },
+  promptCard: {
+    marginTop: 12,
+    backgroundColor: 'rgba(255,255,255,0.92)',
+    borderRadius: 18,
+    paddingHorizontal: 18,
+    paddingVertical: 10,
+    shadowColor: '#000',
+    shadowOpacity: 0.12,
+    shadowRadius: 6,
+    shadowOffset: { width: 0, height: 3 },
+    elevation: 3,
+  },
   prompt: {
     fontSize: 22,
     fontFamily: fonts.displayBold,
     color: colors.text,
-    marginTop: 12,
+  },
+  gridCard: {
+    marginVertical: 16,
+    backgroundColor: 'rgba(255,255,255,0.9)',
+    borderRadius: 24,
+    paddingVertical: 8,
+    shadowColor: '#000',
+    shadowOpacity: 0.14,
+    shadowRadius: 10,
+    shadowOffset: { width: 0, height: 5 },
+    elevation: 4,
   },
   grid: {
     flexDirection: 'row',
     flexWrap: 'wrap',
     justifyContent: 'center',
     paddingHorizontal: 32,
-    marginVertical: 16,
     maxWidth: 320,
   },
   item: {
