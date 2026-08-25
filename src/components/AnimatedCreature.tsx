@@ -1,26 +1,21 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { Animated, Easing, StyleSheet, Text } from 'react-native';
-import { Image } from 'expo-image';
 import { MotionType } from '../data/motion';
-import { ANIMAL_ASSETS } from '../data/animalAssets';
-import { DogAnimation } from './DogAnimation';
+import { ANIMAL_VIDEOS } from '../data/animalVideos';
+import AnimalVideo from './AnimalVideo';
 
 type Props = {
   emoji: string;
   motion: MotionType;
   size?: number;
+  /** Skip the real-video lookup even if one exists — for contexts that render many at once (e.g. a counting grid), where several concurrent video players would be wasteful. */
+  preferEmoji?: boolean;
 };
 
-const DOG_EMOJI = '🐶';
-
-export default function AnimatedCreature({ emoji, motion, size = 96 }: Props) {
-  if (emoji === DOG_EMOJI) {
-    return <DogAnimation width={size * 1.8} square />;
-  }
-
-  const realAsset = ANIMAL_ASSETS[emoji];
-  if (realAsset) {
-    return <Image source={realAsset} style={{ width: size * 1.8, height: size * 1.8 }} contentFit="contain" />;
+export default function AnimatedCreature({ emoji, motion, size = 96, preferEmoji }: Props) {
+  const realVideo = !preferEmoji && ANIMAL_VIDEOS[emoji];
+  if (realVideo) {
+    return <AnimalVideo source={realVideo} width={size * 1.8} square />;
   }
 
   switch (motion) {

@@ -48,7 +48,7 @@ export default function NumbersScreen({ navigation }: Props) {
         <View style={styles.grid}>
           {Array.from({ length: question.count }, (_, i) => (
             <View key={i} style={styles.item}>
-              <AnimatedCreature emoji={question.emoji} motion="idle" size={40} />
+              <AnimatedCreature emoji={question.emoji} motion="idle" size={40} preferEmoji />
             </View>
           ))}
         </View>
