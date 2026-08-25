@@ -5,21 +5,6 @@ import HomeMenuExact from './HomeMenuExact';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'HomeMenu'>;
 
-const COMING_SOON_TITLES: Record<string, string> = {
-  'motion-quiz': 'Hərəkəti Tap',
-  numbers: 'Sayıları Öyrən',
-  colors: 'Rənglər',
-  compare: 'Daha Çox və ya Az?',
-  clock: 'Saatı Öyrən',
-  shapes: 'Formalar',
-  achievements: 'Nailiyyətlər',
-  daily: 'Gündəlik',
-  store: 'Mağaza',
-  parent: 'Valideyn',
-  gift: 'Hədiyyə',
-  music: 'Musiqi/Səs',
-};
-
 export default function HomeMenuScreen({ navigation }: Props) {
   const handleNavigate = (route: string) => {
     switch (route) {
@@ -35,6 +20,39 @@ export default function HomeMenuScreen({ navigation }: Props) {
       case 'world':
         navigation.navigate('WorldMap');
         return;
+      case 'motion-quiz':
+        navigation.navigate('MotionQuiz');
+        return;
+      case 'numbers':
+        navigation.navigate('Numbers');
+        return;
+      case 'compare':
+        navigation.navigate('Compare');
+        return;
+      case 'colors':
+        navigation.navigate('Colors');
+        return;
+      case 'shapes':
+        navigation.navigate('Shapes');
+        return;
+      case 'clock':
+        navigation.navigate('Clock');
+        return;
+      case 'achievements':
+        navigation.navigate('Achievements');
+        return;
+      case 'music':
+        navigation.navigate('Music');
+        return;
+      case 'daily':
+        navigation.navigate('Daily');
+        return;
+      case 'gift':
+        navigation.navigate('Gift');
+        return;
+      case 'parent':
+        navigation.navigate('Parent');
+        return;
       case 'settings':
         navigation.navigate('Home');
         return;
@@ -42,10 +60,12 @@ export default function HomeMenuScreen({ navigation }: Props) {
       case 'learn':
         // Already on the main menu.
         return;
-      default: {
-        const title = COMING_SOON_TITLES[route] ?? route;
-        navigation.navigate('ComingSoon', { title });
-      }
+      case 'store':
+        // No coin/currency system exists yet — an honest "coming soon" beats a fake shop.
+        navigation.navigate('ComingSoon', { title: 'Mağaza' });
+        return;
+      default:
+        navigation.navigate('ComingSoon', { title: route });
     }
   };
 

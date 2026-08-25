@@ -26,6 +26,8 @@ export default function OptionButton({ label, status, disabled, onPress, icon }:
     <Pressable
       onPress={onPress}
       disabled={disabled}
+      accessibilityRole="button"
+      accessibilityLabel={label}
       style={({ pressed }) => [
         styles.button,
         { backgroundColor: statusColor[status] },

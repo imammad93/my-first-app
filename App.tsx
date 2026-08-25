@@ -15,6 +15,17 @@ import MathGameScreen from './src/screens/MathGameScreen';
 import EnglishGameScreen from './src/screens/EnglishGameScreen';
 import AlphabetGameScreen from './src/screens/AlphabetGameScreen';
 import WorldMapScreen from './src/screens/WorldMapScreen';
+import MotionQuizScreen from './src/screens/MotionQuizScreen';
+import NumbersScreen from './src/screens/NumbersScreen';
+import CompareScreen from './src/screens/CompareScreen';
+import ColorsScreen from './src/screens/ColorsScreen';
+import ShapesScreen from './src/screens/ShapesScreen';
+import ClockScreen from './src/screens/ClockScreen';
+import AchievementsScreen from './src/screens/AchievementsScreen';
+import MusicScreen from './src/screens/MusicScreen';
+import DailyScreen from './src/screens/DailyScreen';
+import GiftScreen from './src/screens/GiftScreen';
+import ParentScreen from './src/screens/ParentScreen';
 import { AgeProvider } from './src/context/AgeContext';
 import { colors, fonts } from './src/theme';
 import type { GameId } from './src/data/progress';
@@ -29,6 +40,17 @@ export type RootStackParamList = {
   English: { level: number };
   Alphabet: { level: number };
   WorldMap: undefined;
+  MotionQuiz: undefined;
+  Numbers: undefined;
+  Compare: undefined;
+  Colors: undefined;
+  Shapes: undefined;
+  Clock: undefined;
+  Achievements: undefined;
+  Music: undefined;
+  Daily: undefined;
+  Gift: undefined;
+  Parent: undefined;
 };
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
@@ -87,6 +109,41 @@ export default function App() {
               options={{ title: 'Əlifba', headerStyle: { backgroundColor: colors.alphabet } }}
             />
             <Stack.Screen name="WorldMap" component={WorldMapScreen} options={{ headerShown: false }} />
+            <Stack.Screen
+              name="MotionQuiz"
+              component={MotionQuizScreen}
+              options={{ title: 'Hərəkəti Tap', headerStyle: { backgroundColor: '#5AA9E6' } }}
+            />
+            <Stack.Screen
+              name="Numbers"
+              component={NumbersScreen}
+              options={{ title: 'Sayıları Öyrən', headerStyle: { backgroundColor: colors.math } }}
+            />
+            <Stack.Screen
+              name="Compare"
+              component={CompareScreen}
+              options={{ title: 'Daha Çox və ya Az?', headerStyle: { backgroundColor: '#E97DB0' } }}
+            />
+            <Stack.Screen
+              name="Colors"
+              component={ColorsScreen}
+              options={{ title: 'Rənglər', headerStyle: { backgroundColor: '#FF9F3D' } }}
+            />
+            <Stack.Screen
+              name="Shapes"
+              component={ShapesScreen}
+              options={{ title: 'Formalar', headerStyle: { backgroundColor: colors.english } }}
+            />
+            <Stack.Screen
+              name="Clock"
+              component={ClockScreen}
+              options={{ title: 'Saatı Öyrən', headerStyle: { backgroundColor: '#4A9FE0' } }}
+            />
+            <Stack.Screen name="Achievements" component={AchievementsScreen} options={{ title: 'Nailiyyətlər' }} />
+            <Stack.Screen name="Music" component={MusicScreen} options={{ title: 'Musiqi/Səs' }} />
+            <Stack.Screen name="Daily" component={DailyScreen} options={{ title: 'Gündəlik' }} />
+            <Stack.Screen name="Gift" component={GiftScreen} options={{ title: 'Hədiyyə' }} />
+            <Stack.Screen name="Parent" component={ParentScreen} options={{ title: 'Valideyn' }} />
           </Stack.Navigator>
         </NavigationContainer>
       </AgeProvider>

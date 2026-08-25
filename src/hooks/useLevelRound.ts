@@ -57,6 +57,7 @@ export function useLevelRound<Q, A>({ questions, getAnswer }: Args<Q, A>) {
     solved,
     completed,
     stars,
+    firstTryCorrect,
     select,
   };
 }

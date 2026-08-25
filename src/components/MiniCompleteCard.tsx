@@ -33,10 +33,20 @@ export default function MiniCompleteCard({ title, score, total, color, onPlayAga
         <Text style={styles.score}>
           {score}/{total} doğru
         </Text>
-        <Pressable style={[styles.button, { backgroundColor: color }]} onPress={onPlayAgain}>
+        <Pressable
+          style={[styles.button, { backgroundColor: color }]}
+          onPress={onPlayAgain}
+          accessibilityRole="button"
+          accessibilityLabel="Yenidən oyna"
+        >
           <Text style={styles.buttonLabel}>Yenidən oyna ▶</Text>
         </Pressable>
-        <Pressable style={styles.secondaryButton} onPress={onBackToMenu}>
+        <Pressable
+          style={styles.secondaryButton}
+          onPress={onBackToMenu}
+          accessibilityRole="button"
+          accessibilityLabel="Menyuya qayıt"
+        >
           <Text style={styles.secondaryLabel}>Menyuya qayıt</Text>
         </Pressable>
       </Animated.View>
