@@ -10,12 +10,14 @@ type Props = {
   size?: number;
   /** Skip the real-video lookup even if one exists — for contexts that render many at once (e.g. a counting grid), where several concurrent video players would be wasteful. */
   preferEmoji?: boolean;
+  /** Play the video's own sound. Only pass this where exactly one creature is on screen — several at once would overlap into noise. */
+  sound?: boolean;
 };
 
-export default function AnimatedCreature({ emoji, motion, size = 96, preferEmoji }: Props) {
+export default function AnimatedCreature({ emoji, motion, size = 96, preferEmoji, sound }: Props) {
   const realVideo = !preferEmoji && ANIMAL_VIDEOS[emoji];
   if (realVideo) {
-    return <AnimalVideo source={realVideo} width={size * 1.8} square />;
+    return <AnimalVideo source={realVideo} width={size * 1.8} square muted={!sound} />;
   }
 
   switch (motion) {

@@ -75,7 +75,7 @@ export default function WordTrainGame({ emoji, motion, options, correctWord, wro
             },
           ]}
         >
-          <AnimatedCreature emoji={emoji} motion={solved ? 'idle' : motion} size={CREATURE_SIZE} />
+          <AnimatedCreature emoji={emoji} motion={solved ? 'idle' : motion} size={CREATURE_SIZE} sound />
         </Animated.View>
       </View>
 

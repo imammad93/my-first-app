@@ -187,7 +187,7 @@ export default function WelcomeScreen({ navigation }: Props) {
           <View style={styles.mascotRow}>
             <View style={styles.mascotGround} />
             <View style={styles.dogWrap}>
-              <AnimatedCreature emoji="🐶" motion="walk" size={46} />
+              <AnimatedCreature emoji="🐶" motion="walk" size={46} sound />
             </View>
             <AnimatedCreature emoji="🧒" motion="hop" size={84} />
           </View>

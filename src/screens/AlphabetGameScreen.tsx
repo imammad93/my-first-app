@@ -64,7 +64,7 @@ function AlphabetLevelRound({ level, navigation }: { level: number; navigation: 
             <Text style={styles.prompt}>Bu hansı hərflə başlayır?</Text>
           </View>
           <CreatureStage>
-            <AnimatedCreature emoji={question.target.emoji} motion={question.target.motion} size={92} />
+            <AnimatedCreature emoji={question.target.emoji} motion={question.target.motion} size={92} sound />
           </CreatureStage>
           <View style={styles.options}>
             {question.letterOptions.map((letter, i) => (

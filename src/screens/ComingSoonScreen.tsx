@@ -12,7 +12,7 @@ export default function ComingSoonScreen({ route }: Props) {
 
   return (
     <SafeAreaView style={styles.container}>
-      <AnimatedCreature emoji="🦋" motion="fly" size={72} />
+      <AnimatedCreature emoji="🦋" motion="fly" size={72} sound />
       <Text style={styles.title}>{title}</Text>
       <Text style={styles.subtitle}>Bu oyun tezliklə əlavə olunacaq!</Text>
     </SafeAreaView>
