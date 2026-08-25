@@ -1,6 +1,8 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { Animated, Easing, StyleSheet, Text } from 'react-native';
+import { Image } from 'expo-image';
 import { MotionType } from '../data/motion';
+import { ANIMAL_ASSETS } from '../data/animalAssets';
 
 type Props = {
   emoji: string;
@@ -9,6 +11,11 @@ type Props = {
 };
 
 export default function AnimatedCreature({ emoji, motion, size = 96 }: Props) {
+  const realAsset = ANIMAL_ASSETS[emoji];
+  if (realAsset) {
+    return <Image source={realAsset} style={{ width: size * 1.8, height: size * 1.8 }} contentFit="contain" />;
+  }
+
   switch (motion) {
     case 'walk':
       return <Walker emoji={emoji} size={size} range={55} stepMs={2000} />;
